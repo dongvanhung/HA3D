@@ -1,0 +1,26 @@
+0000-0040 loop Jump 
+0042-0241 loop Idlle 
+0242-0291 loop Idle01
+0292-0361 loop Idle02
+0362-0395 loop Attack
+0396-0436 loop Attack01
+0438-0471 loop WalkBack
+0473-0494 loop Trot
+0496-0509 loop Gallop
+0511-0539 loop Tarsus
+0541-0660 loop Idle03 
+0661-0686 loop Death 
+0689-0704 loop HitRight
+0705-0723 loop HitLeft
+0724-0740 loop HitFront
+0741-0758 loop HitBack  
+0759-0787 loop Attack Gallop 
+0788-0789 loop stop 
+0790-0811 loop TrotTurnL
+0813-0834 loop TrotTurnR
+0836-0849 loop GallopTurnL
+0851-0864 loop GallopTurnR
+0866-0894 loop TarsusTurnL
+0896-0924 loop TarsusTurnR
+0926-0963 loop ZigZagRight
+0965-1002 loop ZigZagLeft

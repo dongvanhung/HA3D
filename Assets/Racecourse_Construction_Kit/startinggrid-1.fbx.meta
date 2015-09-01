@@ -1,0 +1,206 @@
+fileFormatVersion: 2
+guid: aa1f7e071f08a4059a440cf3303dac65
+timeCreated: 1440671081
+licenseType: Pro
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: Plane.000
+    100002: Plane.001
+    100004: Plane.002
+    100006: Plane.003
+    100008: Plane.004
+    100010: Plane.005
+    100012: StartBlock1
+    100014: StartBlock1.001
+    100016: StartBlock1.002
+    100018: StartBlock1.003
+    100020: StartBlock1.004
+    100022: StartBlock1.005
+    100024: StartBlock1.006
+    100026: StartBlock1.007
+    100028: StartBlock1.008
+    100030: StartBlock1.009
+    100032: StartBlock1.010
+    100034: StartBlock1.011
+    100036: StartBlock1.012
+    100038: StartBlock1.013
+    100040: StartBlock1.014
+    100042: StartBlock1.015
+    100044: StartBlock1.016
+    100046: StartBlock1.017
+    100048: StartBlock1.018
+    100050: StartBlock1.019
+    100052: StartBlock1.020
+    100054: //RootNode
+    400000: Plane.000
+    400002: Plane.001
+    400004: Plane.002
+    400006: Plane.003
+    400008: Plane.004
+    400010: Plane.005
+    400012: StartBlock1
+    400014: StartBlock1.001
+    400016: StartBlock1.002
+    400018: StartBlock1.003
+    400020: StartBlock1.004
+    400022: StartBlock1.005
+    400024: StartBlock1.006
+    400026: StartBlock1.007
+    400028: StartBlock1.008
+    400030: StartBlock1.009
+    400032: StartBlock1.010
+    400034: StartBlock1.011
+    400036: StartBlock1.012
+    400038: StartBlock1.013
+    400040: StartBlock1.014
+    400042: StartBlock1.015
+    400044: StartBlock1.016
+    400046: StartBlock1.017
+    400048: StartBlock1.018
+    400050: StartBlock1.019
+    400052: StartBlock1.020
+    400054: //RootNode
+    2300000: Plane.000
+    2300002: Plane.001
+    2300004: Plane.002
+    2300006: Plane.003
+    2300008: Plane.004
+    2300010: Plane.005
+    2300012: StartBlock1
+    2300014: StartBlock1.001
+    2300016: StartBlock1.002
+    2300018: StartBlock1.003
+    2300020: StartBlock1.004
+    2300022: StartBlock1.005
+    2300024: StartBlock1.006
+    2300026: StartBlock1.007
+    2300028: StartBlock1.008
+    2300030: StartBlock1.009
+    2300032: StartBlock1.010
+    2300034: StartBlock1.011
+    2300036: StartBlock1.012
+    2300038: StartBlock1.013
+    2300040: StartBlock1.014
+    2300042: StartBlock1.015
+    2300044: StartBlock1.016
+    2300046: StartBlock1.017
+    2300048: StartBlock1.018
+    2300050: StartBlock1.019
+    2300052: StartBlock1.020
+    3300000: Plane.000
+    3300002: Plane.001
+    3300004: Plane.002
+    3300006: Plane.003
+    3300008: Plane.004
+    3300010: Plane.005
+    3300012: StartBlock1
+    3300014: StartBlock1.001
+    3300016: StartBlock1.002
+    3300018: StartBlock1.003
+    3300020: StartBlock1.004
+    3300022: StartBlock1.005
+    3300024: StartBlock1.006
+    3300026: StartBlock1.007
+    3300028: StartBlock1.008
+    3300030: StartBlock1.009
+    3300032: StartBlock1.010
+    3300034: StartBlock1.011
+    3300036: StartBlock1.012
+    3300038: StartBlock1.013
+    3300040: StartBlock1.014
+    3300042: StartBlock1.015
+    3300044: StartBlock1.016
+    3300046: StartBlock1.017
+    3300048: StartBlock1.018
+    3300050: StartBlock1.019
+    3300052: StartBlock1.020
+    4300000: Plane.004
+    4300002: Plane.003
+    4300004: Plane.002
+    4300006: Plane.001
+    4300008: Plane.000
+    4300010: StartBlock1.020
+    4300012: StartBlock1.019
+    4300014: StartBlock1.018
+    4300016: StartBlock1.017
+    4300018: Plane.005
+    4300020: StartBlock1.016
+    4300022: StartBlock1.015
+    4300024: StartBlock1.014
+    4300026: StartBlock1.013
+    4300028: StartBlock1.012
+    4300030: StartBlock1.011
+    4300032: StartBlock1.010
+    4300034: StartBlock1.009
+    4300036: StartBlock1.008
+    4300038: StartBlock1.007
+    4300040: StartBlock1.006
+    4300042: StartBlock1.005
+    4300044: StartBlock1.004
+    4300046: StartBlock1.003
+    4300048: StartBlock1.002
+    4300050: StartBlock1.001
+    4300052: StartBlock1
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

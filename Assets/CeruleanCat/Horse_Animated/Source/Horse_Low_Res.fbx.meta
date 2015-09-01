@@ -1,0 +1,158 @@
+fileFormatVersion: 2
+guid: b5310d1887ea51d4f882cc0b91215433
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: Armature
+    100002: ear_L
+    100004: ear_R
+    100006: footfore_L
+    100008: footfore_R
+    100010: foothind_L
+    100012: foothind_R
+    100014: head
+    100016: hiplower_L
+    100018: hiplower_R
+    100020: hipupper_L
+    100022: hipupper_R
+    100024: Horse_Low_Res
+    100026: //RootNode
+    100028: legforelower_L
+    100030: legforelower_R
+    100032: legforeupper_L
+    100034: legforeupper_R
+    100036: leghindlower_L
+    100038: leghindlower_R
+    100040: leghindupper_L
+    100042: leghindupper_R
+    100044: Movement_Bone
+    100046: neckbase
+    100048: neckend
+    100050: neckmid
+    100052: pasternfore_L
+    100054: pasternfore_R
+    100056: pasternhind_L
+    100058: pasternhind_R
+    100060: shoulderlower_L
+    100062: shoulderlower_R
+    100064: shoulderupper_L
+    100066: shoulderupper_R
+    100068: spinebeginning
+    100070: spineend
+    100072: spinemid
+    100074: tailend
+    100076: taillower
+    100078: tailmid
+    100080: tailtip
+    100082: tailupper
+    400000: Armature
+    400002: ear_L
+    400004: ear_R
+    400006: footfore_L
+    400008: footfore_R
+    400010: foothind_L
+    400012: foothind_R
+    400014: head
+    400016: hiplower_L
+    400018: hiplower_R
+    400020: hipupper_L
+    400022: hipupper_R
+    400024: //RootNode
+    400026: Horse_Low_Res
+    400028: legforelower_L
+    400030: legforelower_R
+    400032: legforeupper_L
+    400034: legforeupper_R
+    400036: leghindlower_L
+    400038: leghindlower_R
+    400040: leghindupper_L
+    400042: leghindupper_R
+    400044: Movement_Bone
+    400046: neckbase
+    400048: neckend
+    400050: neckmid
+    400052: pasternfore_L
+    400054: pasternfore_R
+    400056: pasternhind_L
+    400058: pasternhind_R
+    400060: shoulderlower_L
+    400062: shoulderlower_R
+    400064: shoulderupper_L
+    400066: shoulderupper_R
+    400068: spinebeginning
+    400070: spineend
+    400072: spinemid
+    400074: tailend
+    400076: taillower
+    400078: tailmid
+    400080: tailtip
+    400082: tailupper
+    4300000: Horse_Low_Res
+    7400000: Default Take
+    7400002: ArmatureAction
+    7400004: ArmatureAction_001
+    9500000: //RootNode
+    13700000: Horse_Low_Res
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .189999998
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 0
+  copyAvatar: 1
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: Movement_Bone
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: c5cf6de1b6220dd4cbea183b6da7a5ce,
+    type: 3}
+  animationType: 2
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

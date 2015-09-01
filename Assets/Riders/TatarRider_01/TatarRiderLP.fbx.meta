@@ -1,0 +1,1003 @@
+fileFormatVersion: 2
+guid: 31b11389750bb394d8120aa36dd57dea
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: be_head01
+    100002: bind_bridle03
+    100004: bind_bridle04
+    100006: bind_head01
+    100008: bind_l_femur01
+    100010: bind_l_finger01
+    100012: bind_l_finger01a
+    100014: bind_l_humerus01
+    100016: bind_l_metatarsus01
+    100018: bind_l_raduis01
+    100020: bind_l_tibia01
+    100022: bind_l_toe01
+    100024: bind_pelvis01
+    100026: bind_r_femur01
+    100028: bind_r_finger01
+    100030: bind_r_finger01a
+    100032: bind_r_humerus01
+    100034: bind_r_metatarsus01
+    100036: bind_r_raduis01
+    100038: bind_r_tibia01
+    100040: bind_r_toe01
+    100042: bind_tail_01
+    100044: bind_tail_02
+    100046: bind_tail_03
+    100048: bind_tail_04
+    100050: bind_tail_mainNoSkin1
+    100052: bind_thorax01
+    100054: bind_thorax01_transform1
+    100056: bind_thorax01_transform2
+    100058: Bones_Scale_Translate_Rotate
+    100060: Bridle
+    100062: Character1_Head
+    100064: Character1_LeftArm
+    100066: Character1_LeftFoot
+    100068: Character1_LeftForeArm
+    100070: Character1_LeftHand
+    100072: Character1_LeftHandMiddle1
+    100074: Character1_LeftHandMiddle2
+    100076: Character1_LeftHandMiddle3
+    100078: Character1_LeftHandMiddle4
+    100080: Character1_LeftHandThumb1
+    100082: Character1_LeftLeg
+    100084: Character1_LeftShoulder
+    100086: Character1_LeftToeBase
+    100088: Character1_LeftUpLeg
+    100090: Character1_LeftUpLeg_transform1
+    100092: Character1_LeftUpLeg_transform2
+    100094: Character1_LeftUpLeg_transform3
+    100096: Character1_Neck
+    100098: Character1_RightArm
+    100100: Character1_RightFoot
+    100102: Character1_RightForeArm
+    100104: Character1_RightHand
+    100106: Character1_RightHandMiddle1
+    100108: Character1_RightHandMiddle2
+    100110: Character1_RightHandThumb1
+    100112: Character1_RightLeg
+    100114: Character1_RightShoulder
+    100116: Character1_RightToeBase
+    100118: Character1_RightUpLeg
+    100120: Character1_RightUpLeg_transform4
+    100122: Character1_Spine
+    100124: Character1_Spine1
+    100126: Character1_Spine2
+    100128: Cloth_L_B_Down01
+    100130: Cloth_L_FDown01
+    100132: Cloth_L_FUp01
+    100134: Cloth_R_B_Down01
+    100136: Cloth_R_FDown01
+    100138: Cloth_R_FUp01
+    100140: Copy_bind_bridle02
+    100142: HAnd_Sword
+    100144: Horse
+    100146: Hourse_mane
+    100148: joint1
+    100150: joint2
+    100152: joint3
+    100154: joint4
+    100156: left
+    100158: modeling
+    100160: neck_bind_a01
+    100162: neck_bind_b01
+    100164: neck_bind_c01
+    100166: neck_bind_c01_transform4
+    100168: neck_bind_d01
+    100170: neck_bind_e01
+    100172: neck_bind_e01_transform3
+    100174: null1
+    100176: polySurface24
+    100178: polySurface28
+    100180: Sadle1
+    100182: side1
+    100184: Sword_bones
+    100186: Tatar
+    100188: Tatar_Skala_Character1_Hips
+    100190: //RootNode
+    100192: test:polySurface1
+    100194: transform11
+    100196: transform5
+    100198: transform6
+    100200: transform7
+    100202: vertebrae_bind_a01
+    100204: vertebrae_bind_b01
+    100206: vertebrae_bind_c01
+    100208: vertebrae_bind_d01
+    100210: vertebrae_bind_e01
+    100212: polySurface1
+    400000: be_head01
+    400002: bind_bridle03
+    400004: bind_bridle04
+    400006: bind_head01
+    400008: bind_l_femur01
+    400010: bind_l_finger01
+    400012: bind_l_finger01a
+    400014: bind_l_humerus01
+    400016: bind_l_metatarsus01
+    400018: bind_l_raduis01
+    400020: bind_l_tibia01
+    400022: bind_l_toe01
+    400024: bind_pelvis01
+    400026: bind_r_femur01
+    400028: bind_r_finger01
+    400030: bind_r_finger01a
+    400032: bind_r_humerus01
+    400034: bind_r_metatarsus01
+    400036: bind_r_raduis01
+    400038: bind_r_tibia01
+    400040: bind_r_toe01
+    400042: bind_tail_01
+    400044: bind_tail_02
+    400046: bind_tail_03
+    400048: bind_tail_04
+    400050: bind_tail_mainNoSkin1
+    400052: bind_thorax01
+    400054: bind_thorax01_transform1
+    400056: bind_thorax01_transform2
+    400058: Bones_Scale_Translate_Rotate
+    400060: Bridle
+    400062: Character1_Head
+    400064: Character1_LeftArm
+    400066: Character1_LeftFoot
+    400068: Character1_LeftForeArm
+    400070: Character1_LeftHand
+    400072: Character1_LeftHandMiddle1
+    400074: Character1_LeftHandMiddle2
+    400076: Character1_LeftHandMiddle3
+    400078: Character1_LeftHandMiddle4
+    400080: Character1_LeftHandThumb1
+    400082: Character1_LeftLeg
+    400084: Character1_LeftShoulder
+    400086: Character1_LeftToeBase
+    400088: Character1_LeftUpLeg
+    400090: Character1_LeftUpLeg_transform1
+    400092: Character1_LeftUpLeg_transform2
+    400094: Character1_LeftUpLeg_transform3
+    400096: Character1_Neck
+    400098: Character1_RightArm
+    400100: Character1_RightFoot
+    400102: Character1_RightForeArm
+    400104: Character1_RightHand
+    400106: Character1_RightHandMiddle1
+    400108: Character1_RightHandMiddle2
+    400110: Character1_RightHandThumb1
+    400112: Character1_RightLeg
+    400114: Character1_RightShoulder
+    400116: Character1_RightToeBase
+    400118: Character1_RightUpLeg
+    400120: Character1_RightUpLeg_transform4
+    400122: Character1_Spine
+    400124: Character1_Spine1
+    400126: Character1_Spine2
+    400128: Cloth_L_B_Down01
+    400130: Cloth_L_FDown01
+    400132: Cloth_L_FUp01
+    400134: Cloth_R_B_Down01
+    400136: Cloth_R_FDown01
+    400138: Cloth_R_FUp01
+    400140: Copy_bind_bridle02
+    400142: HAnd_Sword
+    400144: Horse
+    400146: Hourse_mane
+    400148: joint1
+    400150: joint2
+    400152: joint3
+    400154: joint4
+    400156: left
+    400158: modeling
+    400160: neck_bind_a01
+    400162: neck_bind_b01
+    400164: neck_bind_c01
+    400166: neck_bind_c01_transform4
+    400168: neck_bind_d01
+    400170: neck_bind_e01
+    400172: neck_bind_e01_transform3
+    400174: null1
+    400176: polySurface24
+    400178: polySurface28
+    400180: Sadle1
+    400182: side1
+    400184: Sword_bones
+    400186: Tatar
+    400188: Tatar_Skala_Character1_Hips
+    400190: //RootNode
+    400192: test:polySurface1
+    400194: transform11
+    400196: transform5
+    400198: transform6
+    400200: transform7
+    400202: vertebrae_bind_a01
+    400204: vertebrae_bind_b01
+    400206: vertebrae_bind_c01
+    400208: vertebrae_bind_d01
+    400210: vertebrae_bind_e01
+    400212: polySurface1
+    2300000: polySurface24
+    2300002: polySurface28
+    3300000: polySurface24
+    3300002: polySurface28
+    4300000: Hourse_mane
+    4300002: Bridle
+    4300004: Sadle1
+    4300006: Tatar
+    4300008: polySurface24
+    4300010: polySurface28
+    4300012: test:polySurface1
+    4300014: polySurface1
+    7400000: Jump
+    7400002: Idlle
+    7400004: Idle01
+    7400006: Idle02
+    7400008: Attack
+    7400010: Attack01
+    7400012: WalkBack
+    7400014: Trot
+    7400016: Gallop
+    7400018: Tarsus
+    7400020: Idle03
+    7400022: Death
+    7400024: HitRight
+    7400026: HitLeft
+    7400028: HitFront
+    7400030: HitBack
+    7400032: Attack Gallop
+    7400034: stop
+    7400036: TrotTurnL
+    7400038: TrotTurnR
+    7400040: GallopTurnL
+    7400042: GallopTurnR
+    7400044: TarsusTurnL
+    7400046: TarsusTurnR
+    7400048: ZigZagRight
+    7400050: ZigZagLeft
+    9500000: //RootNode
+    11100000: //RootNode
+    13700000: Bridle
+    13700002: Hourse_mane
+    13700004: Sadle1
+    13700006: Tatar
+    13700008: test:polySurface1
+    13700010: polySurface1
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 0
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Jump
+      takeName: 
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idlle
+      takeName: 
+      firstFrame: 42
+      lastFrame: 241
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle01
+      takeName: 
+      firstFrame: 242
+      lastFrame: 291
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle02
+      takeName: 
+      firstFrame: 292
+      lastFrame: 361
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Attack
+      takeName: 
+      firstFrame: 362
+      lastFrame: 395
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Attack01
+      takeName: 
+      firstFrame: 396
+      lastFrame: 436
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: WalkBack
+      takeName: 
+      firstFrame: 438
+      lastFrame: 471
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Trot
+      takeName: 
+      firstFrame: 473
+      lastFrame: 494
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Gallop
+      takeName: 
+      firstFrame: 496
+      lastFrame: 509
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Tarsus
+      takeName: 
+      firstFrame: 511
+      lastFrame: 539
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle03
+      takeName: 
+      firstFrame: 541
+      lastFrame: 660
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Death
+      takeName: 
+      firstFrame: 661
+      lastFrame: 686
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: HitRight
+      takeName: 
+      firstFrame: 689
+      lastFrame: 704
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: HitLeft
+      takeName: 
+      firstFrame: 705
+      lastFrame: 723
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: HitFront
+      takeName: 
+      firstFrame: 724
+      lastFrame: 740
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: HitBack
+      takeName: 
+      firstFrame: 741
+      lastFrame: 758
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Attack Gallop
+      takeName: 
+      firstFrame: 759
+      lastFrame: 787
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: stop
+      takeName: 
+      firstFrame: 788
+      lastFrame: 789
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: TrotTurnL
+      takeName: 
+      firstFrame: 790
+      lastFrame: 811
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: TrotTurnR
+      takeName: 
+      firstFrame: 813
+      lastFrame: 834
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: GallopTurnL
+      takeName: 
+      firstFrame: 836
+      lastFrame: 849
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: GallopTurnR
+      takeName: 
+      firstFrame: 851
+      lastFrame: 864
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: TarsusTurnL
+      takeName: 
+      firstFrame: 866
+      lastFrame: 894
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: TarsusTurnR
+      takeName: 
+      firstFrame: 896
+      lastFrame: 924
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: ZigZagRight
+      takeName: 
+      firstFrame: 926
+      lastFrame: 963
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: ZigZagLeft
+      takeName: 
+      firstFrame: 965
+      lastFrame: 1002
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 0
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .00999999978
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
