@@ -9,22 +9,22 @@ public class HorseDataBase {
 	public OnLevelUp onLevelUp;
 
 	public int horseID;
-	public int ownerID;
+	public long ownerID;
 	
 	protected string _baseName;
-	public double speed;
-	protected double acceleration;
+	public long speed;
+	protected long acceleration;
 	
-	public double jumping;
-	protected double _stamina;
-	public double recovery;
+	public long jumping;
+	protected long _stamina;
+	public long recovery;
 
 	public double happiness;
 	
-	public double potential;
-	public double stridelength; 
-	public double cadence;
-	public double determination;
+	public long potential;
+	public long stridelength; 
+	public long cadence;
+	public long determination;
 
 	public int dateborn;
 	public int fatigue;
@@ -50,7 +50,7 @@ public class HorseDataBase {
 
 	public EGender gender;
 
-	private double _xp;
+	private long _xp;
 	
 	public int level;
 	
@@ -60,17 +60,18 @@ public class HorseDataBase {
 	public int height;
 	public int trainingReturnTime;
 	
+	public long modDetermination;
 
-	public double salePrice = 0;
-	public double oldSalePrice = 0;
+	public long salePrice = 0;
+	public long oldSalePrice = 0;
 
 	public ESurfaceType surfacePreference;
 	
 	public double horseScore = 0;
-	public int studFee;
+	public long studFee;
 	
-	public double originalOwnerID;
-	public double birthTime;
+	public long originalOwnerID;
+	public long birthTime;
 	
 	
 	public int motherID;
@@ -86,7 +87,7 @@ public class HorseDataBase {
 	public const int MAX_RACE_AGE = 15;
 
 
-	public static float[] LEVELXPS = new float[100] {0,619,2311,5886,12155,21983,36280,55995,82111,115645,
+	public static long[] LEVELXPS = new long[100] {0,619,2311,5886,12155,21983,36280,55995,82111,115645,
 		157641,209172,271333,345248,432060,532936,649065,781656,931939,1101168,
 		1290617,1501582,1735385,1993373,2276921,2587436,2926361,3295179,3695422,4128678
 		,4596603,5100933,5643501,6226262,6851314,7520934,8237619,9004138,9823590,10699490,
@@ -96,16 +97,16 @@ public class HorseDataBase {
 		283667679,337456363,403084152,483247737,581257247,681257247,781257247,881257247,981257247,1081257247,
 		1181257247,1281257247,1381257247,1501257247,1651257247,1801257247,1971257247,2120000000,2161000000,
 		2351742753,2543485506,2736228259,2929971012,3124713765,3320456518,3517199271,3714942024,3913684777,4113427530,4294967295};
-		public static float[] STAMINALEVELS = new float[100];
-	public static float[] ACCELERATIONADDS = new float[100];
-	public static float[] SPEEDADDS = new float[100];
-	public static float[] SPEEDLEVELS = new float[100];
-	public static float[] ACCELERATIONLEVELS = new float[100];
+	public static long[] STAMINALEVELS = new long[100];
+	public static long[] ACCELERATIONADDS = new long[100];
+	public static long[] SPEEDADDS = new long[100];
+	public static long[] SPEEDLEVELS = new long[100];
+	public static long[] ACCELERATIONLEVELS = new long[100];
 	public static double[] JUMPINGLEVELS = new double[100] {
 0,0.01,0.02,0.03,0.03,0.03,0.04,0.04,0.05,0.05
 ,0.06,0.06,0.06,0.07,0.07,0.07,0.08,0.08,0.09,0.09
 ,0.1,0.1,0.11,0.11,0.12,0.12,0.13,0.13,0.14,0.14,
-0.15,0.15,0.16,0.16,0.17,0.17,0.18,0.18,0.19,0.19,
+0.15,0.15,0.16,0.16,0.17,0.17,0.18,0.18,0.19,0.19, 
 0.2,0.2,0.21,0.21,0.22,0.22,0.23,0.23,0.24,0.24,
 0.25,0.25,0.26,0.26,0.27,0.27,0.28,0.28,0.29,0.29,
 0.3,0.3,0.31,0.31,0.32,0.32,0.33,0.33,0.34,0.35,
@@ -117,8 +118,8 @@ public class HorseDataBase {
 
 	public static void initLevels() {
 		for(int i = 0;i<STAMINALEVELS.Length;i++) {
-			STAMINALEVELS[i] = Mathf.Pow(Mathf.Log((int) (2000+(i*50-(i/25)))),3.63f);
-			SPEEDLEVELS[i] = (int) 400+((4*i)-(i/50)); 
+			STAMINALEVELS[i] = (long) Mathf.Pow(Mathf.Log((int) (2000+(i*50-(i/25)))),3.63f);
+			SPEEDLEVELS[i] = (long) 400+((4*i)-(i/50)); 
 			SPEEDADDS[i] = 1;
 			ACCELERATIONADDS[i] = 1;
 			ACCELERATIONLEVELS[i] = (int) (200+(i*2+(i/100)));
@@ -188,14 +189,14 @@ public class HorseDataBase {
 		}
 	}
 	
-	public double maxStatLevel {
+	public long maxStatLevel {
 		get {
 			return this._xp;
 		} 
 	}
 
 	public void restrictStats() {
-		float maxStatLev = LEVELXPS[this.level];
+		long maxStatLev = LEVELXPS[this.level];
 		
 		if(this.speed>maxStatLevel) this.speed = maxStatLevel;
 		if(this.acceleration>maxStatLevel) this.acceleration = maxStatLevel;
@@ -213,11 +214,11 @@ public class HorseDataBase {
 		}
 	}
 
-	public double accelerationBase {
+	public long accelerationBase {
 		get {
 			return this.acceleration;
 		}
-		set {
+		set { 
 			this.acceleration = value;
 		}
 	}
@@ -262,7 +263,7 @@ public class HorseDataBase {
 		return m;
 		
 	}
-	public double xp {
+	public long xp {
 		get {
 			return this._xp;
 		}
@@ -278,6 +279,11 @@ public class HorseDataBase {
 	{
 		return LEVELXPS[level]-this._xp;
 	}
+	public double DeterminationEffector()
+	{
+		return ((GetLevelFromXP(determination+(modDetermination*10))*1)/4);
+	}
+	
 
 	public double GetPercentToNextFromXP(double aNumber)
 	{
@@ -351,7 +357,7 @@ public class HorseDataBase {
 			return daysOld/7;
 		}
 	}
-	public int daysOld
+	public int daysOld 
 	{
 		get {
 		int secondsOld = TimeUtils.REF.time-this.dateborn;

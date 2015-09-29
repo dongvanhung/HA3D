@@ -24,7 +24,12 @@ public class RacingLine : MonoBehaviour {
 		}
 		setupDistanceToFinish();
 	}
-
+	public void initLine(int aLineIndex) {
+		RaceLinePoint[] p = this.GetComponentsInChildren<RaceLinePoint>();
+		for(int i = 0;i<p.Length;i++) {
+			p[i].gameObject.name = "R"+aLineIndex+"P"+i;
+		}
+	}
 	void setupDistanceToFinish() {
 		
 		RaceLinePoint[] p = this.GetComponentsInChildren<RaceLinePoint>();

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class HorseDataBreedable : MonoBehaviour {
+public class HorseDataBreedable : HorseDataTrainable {
 
 	// Use this for initialization
 	void Start () {

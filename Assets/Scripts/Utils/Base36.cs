@@ -11,7 +11,6 @@ using System.Linq;
 	public static class Base36
 	{
 		private const string CharList = "0123456789abcdefghijklmnopqrstuvwxyz";
-		private static char[] CharArray = CharList.ToCharArray();
 		
 		/// <summary>
 		/// Encode the given number into a Base36 string

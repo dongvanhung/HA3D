@@ -24,6 +24,9 @@ public class RaceCameraManager : MonoBehaviour {
 			string transName = "TV";
 			switch(cameraType) {
 				case(ECameraPositions.Chase):transName = "ChaseCam";break;
+				case(ECameraPositions.Infront):transName = "InfrontCam";break;
+				case(ECameraPositions.SideOn):transName = "SideCam";break;
+				case(ECameraPositions.TopDown):transName = "TopCam";break;
 			}
 
 			if(cameraType!=ECameraPositions.TV) {
@@ -36,6 +39,7 @@ public class RaceCameraManager : MonoBehaviour {
 				camera.transform.localPosition = Vector3.zero;
 			}
 			lastCameraType = cameraType;
+			camera.transform.LookAt(target.transform.position);
 		}
 		if(Time.time-lastUpdate>timeBetweenUpdates) {
 
@@ -57,6 +61,7 @@ public class RaceCameraManager : MonoBehaviour {
 				}
 			}
 		}
-		camera.transform.LookAt(target.transform.position);
+		if(cameraType!=ECameraPositions.TopDown)
+			camera.transform.LookAt(target.transform.position);
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PlayerWithClub : PlayerWithJockeys {
 
+	public int clubLevel = 1;
 	// Use this for initialization
 	void Start () {
 	

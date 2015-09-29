@@ -1,15 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ESurfaceType : MonoBehaviour {
+public enum ESurfaceType {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+	Grass = 0,
+	Sand = 1,
+	Dirt = 2,
+	Snow = 3,
 }

@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Jockey : MonoBehaviour {
+public class Jockey {
 
+	public int id;
 	public int trainsToLevel;
 	public float xpMultiplier;
 
