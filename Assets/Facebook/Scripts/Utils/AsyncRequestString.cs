@@ -1,20 +1,40 @@
-using UnityEngine;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+/**
+ * Copyright (c) 2014-present, Facebook, Inc. All rights reserved.
+ *
+ * You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
+ * copy, modify, and distribute this software in source code or binary form for use
+ * in connection with the web services and APIs provided by Facebook.
+ *
+ * As with any software that integrates with the Facebook platform, your use of
+ * this software is subject to the Facebook Developer Principles and Policies
+ * [http://developers.facebook.com/policy/]. This copyright notice shall be
+ * included in all copies or substantial portions of the software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 namespace Facebook.Unity
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using UnityEngine;
+
     /*
      * A short lived async request that loads a FBResult from a url endpoint
      */
     internal class AsyncRequestString : MonoBehaviour
     {
-        protected string url;
-        protected HttpMethod method;
-        protected Dictionary<string, string> formData;
-        protected WWWForm query;
-        protected FacebookDelegate<IGraphResult> callback;
+        private string url;
+        private HttpMethod method;
+        private IDictionary<string, string> formData;
+        private WWWForm query;
+        private FacebookDelegate<IGraphResult> callback;
 
         internal static void Post(
             string url,
@@ -48,7 +68,7 @@ namespace Facebook.Unity
         internal static void Request(
             string url,
             HttpMethod method,
-            Dictionary<string, string> formData = null,
+            IDictionary<string, string> formData = null,
             FacebookDelegate<IGraphResult> callback = null)
         {
             ComponentFactory.AddComponent<AsyncRequestString>()
@@ -58,51 +78,56 @@ namespace Facebook.Unity
                 .SetCallback(callback);
         }
 
-        IEnumerator Start()
+        internal IEnumerator Start()
         {
             WWW www;
-            if (method == HttpMethod.GET)
+            if (this.method == HttpMethod.GET)
             {
-                string urlParams = (url.Contains("?")) ? "&" : "?";
-                if (formData != null)
+                string urlParams = this.url.Contains("?") ? "&" : "?";
+                if (this.formData != null)
                 {
-                    foreach (KeyValuePair<string, string> pair in formData)
+                    foreach (KeyValuePair<string, string> pair in this.formData)
                     {
                         urlParams += string.Format("{0}={1}&", Uri.EscapeDataString(pair.Key), Uri.EscapeDataString(pair.Value));
                     }
                 }
-                www = new WWW(url + urlParams);
+
+                www = new WWW(this.url + urlParams);
             }
-            else //POST or DELETE
+            else
             {
-                if (query == null)
+                // POST or DELETE
+                if (this.query == null)
                 {
-                    query = new WWWForm();
+                    this.query = new WWWForm();
                 }
-                if (method == HttpMethod.DELETE)
+
+                if (this.method == HttpMethod.DELETE)
                 {
-                    query.AddField("method", "delete");
+                    this.query.AddField("method", "delete");
                 }
-                if (formData != null)
+
+                if (this.formData != null)
                 {
-                    foreach (KeyValuePair<string, string> pair in formData)
+                    foreach (KeyValuePair<string, string> pair in this.formData)
                     {
-                        query.AddField(pair.Key, pair.Value);
+                        this.query.AddField(pair.Key, pair.Value);
                     }
                 }
-                www = new WWW(url, query);
+
+                www = new WWW(this.url, this.query);
             }
 
             yield return www;
 
-            if (callback != null)
+            if (this.callback != null)
             {
-                callback(new GraphResult(www));
+                this.callback(new GraphResult(www));
             }
 
             // after the callback is called, www should be able to be disposed
             www.Dispose();
-            Destroy(this);
+            MonoBehaviour.Destroy(this);
         }
 
         internal AsyncRequestString SetUrl(string url)
@@ -117,7 +142,7 @@ namespace Facebook.Unity
             return this;
         }
 
-        internal AsyncRequestString SetFormData(Dictionary<string, string> formData)
+        internal AsyncRequestString SetFormData(IDictionary<string, string> formData)
         {
             this.formData = formData;
             return this;
@@ -134,6 +159,5 @@ namespace Facebook.Unity
             this.callback = callback;
             return this;
         }
-
     }
 }

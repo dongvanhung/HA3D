@@ -25,6 +25,8 @@
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import <FBSDKShareKit/FBSDKShareKit.h>
 
+#import <Bolts/Bolts.h>
+
 const char* const FB_OBJECT_NAME = "UnityFacebookSDKPlugin";
 
 // Helper method to create C string copy
@@ -145,6 +147,29 @@ char* MakeStringCopy (const char* string)
 
   NSLog(@"Unexpected action type: %@", actionType);
   return FBSDKGameRequestActionTypeNone;
+}
+
++ (NSDictionary *)appLinkDataFromUrl:(NSURL *)url
+{
+  NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+  if (url) {
+    [dict setObject:url.absoluteString forKey:@"url"];
+    BFURL *parsedUrl = [BFURL URLWithInboundURL:url sourceApplication:nil];
+    if (parsedUrl) {
+      if (parsedUrl.appLinkExtras) {
+        [dict setObject:parsedUrl.appLinkExtras forKey:@"extras"];
+
+        // TODO - Try to parse ref param out and pass back
+      }
+
+      if (parsedUrl.targetURL) {
+        [dict setObject:parsedUrl.targetURL.absoluteString forKey:@"target_url"];
+      }
+    }
+  } else {
+    [dict setObject:@true forKey:@"did_complete"];
+  }
+  return dict;
 }
 
 @end

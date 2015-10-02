@@ -43,7 +43,8 @@ public class HorseController : MonoBehaviour {
 	public bool trainingRun = false;
 	
 	public int ownerID;
-	
+	public int smartfoxOwnerID;
+
 	public static int TOTAL_DATA_SENT = 0;
 	public int position;
 	public int finishPosition;
@@ -87,6 +88,8 @@ public class HorseController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		findStartRaceLine();
+		if(SmartfoxConnectionHandler.REF!=null)
+		 SmartfoxConnectionHandler.REF.onHorsesVariableChanged += onHorseVariablesChanged;
 		horseNose = this.transform.FindChild("HorseNose");
 	}
 
@@ -103,11 +106,55 @@ public class HorseController : MonoBehaviour {
 			hasFinished = true;
 		}
 	}
-
-	public void debugInit(HorseData aHorse) {
-		this.dataFromServer(aHorse.ownerID,aHorse.compressedString(1));
+	public void onHorseVariablesChanged(SFSObject aObject) {
+		if (aObject.ContainsKey ("h" + this.horseIndex)) {
+			SFSObject thisHorseObject = (SFSObject) aObject.GetSFSObject ("h" + this.horseIndex);
+			dataFromServer (thisHorseObject.GetInt ("u"), thisHorseObject.GetUtfString ("c"));
+		} else {
+			ownerID = 0;
+		}
 	}
-	public void dataFromServer(long aOwnerID,string aData) {
+	public void debugInit(HorseData aHorse) {
+		this.dataFromServer(Convert.ToInt32(aHorse.ownerID),aHorse.compressedString(1));
+	} 
+	public void makeNPC(HorseController aOtherHorse) {
+		if (this.ownerID == 0) {
+			this.name = "NPC Horse Name "+this.horseIndex;
+			this.acceleration = aOtherHorse.acceleration;
+			this.behindBoost = aOtherHorse.behindBoost;
+			this.deceleration = aOtherHorse.deceleration;
+			this.easeEffect=  aOtherHorse.easeEffect;
+			this.endSpeed = aOtherHorse.endSpeed;
+			this.infrontBoost = aOtherHorse.infrontBoost;
+			this.jumpSpeed = aOtherHorse.jumpSpeed;
+			this.level = aOtherHorse.level;
+			this.midSpeed = aOtherHorse.midSpeed;
+			this.ownerID = 0;
+			this.staminaPerFrame = aOtherHorse.staminaPerFrame;
+			this.stamina = aOtherHorse.stamina;
+			this.whipEffect = aOtherHorse.whipEffect;
+			this.startSpeed = aOtherHorse.startSpeed;
+			this.horseID = this.horseIndex*-1;
+		}
+	}
+	public SFSObject asSFSObject {
+		get{
+			SFSObject o = new SFSObject();
+			o.PutUtfString("c",toCompressedString());
+			o.PutInt("o",this.ownerID);
+			o.PutInt("u",this.smartfoxOwnerID); 
+			return o;
+		}
+	}
+	public string toCompressedString() { 
+		string s= ""+this.startSpeed+"|"+this.midSpeed+"|"+this.endSpeed+"|"+whipEffect+"|"+easeEffect+"|"+this.acceleration;
+		s += "|"+this.horseID+"|"+this.stamina+"|";
+		s += this.staminaPerFrame+"|"+behindBoost+"|"+this.infrontBoost+"|";
+		s+= this.jumpSpeed+"|"+this.baseLayer+"|"+this.overlay+"|"+this.mane+"|"+this.tail+"|"+this.saddle+"|";
+		s+= this.rein+"|"+Compressor.Compress(this.name)+"|"+this.level+"|"+PlayerMain.LOCAL.selectedJockey.id+"|"+this.originalOwner+"|"+this.ownerID;
+		return Compressor.Compress(s);
+	}
+	public void dataFromServer(int aOwnerID,string aData) {
 		string uncompressed = Compressor.UnCompress(aData);
 		string[] split = uncompressed.Split(new char[] {'|'});
 		this.startSpeed = (float) Convert.ToDouble(split[0]);
@@ -135,20 +182,13 @@ public class HorseController : MonoBehaviour {
 
 		this.jockey = (int) Convert.ToInt32(split[20]);
 		this.originalOwner = (long) Convert.ToInt64(split[21]);
-
-		
-		GameObject g = NGUITools.AddChild(GameObject.Find("UI Root"),this.labelPrefab);
-		/*
-			string s= ""+cachedStartSpeed+"|"+cachedMidSpeed+"|"+cachedEndSpeed+"|"+whipEffect+"|"+easeEffect+"|"+raceAcceleration();
-		s += "|"+this.horseID+"|"+staminaForRace+"|";
-		s += takeStaminaPerFrame+"|"+behindBoost+"|"+aheadBoost+"|";
-		s+= raceJumpingSpeed+"|"+this.baseLayer+"|"+this.overlay+"|"+this.mane+"|"+this.tail+"|"+this.saddle+"|";
-		s+= this.reintype+"|"+Compressor.Compress(this._baseName)+"|"+this.level+"|"+PlayerMain.LOCAL.selectedJockey.id+"|"+this.originalOwnerID;
-
-*/	
-		this.myLabel = g.GetComponent<UILabel>();
-		g.GetComponent<UIFollowTarget>().target = this.gameObject.transform.FindChild("PlayersName");
- 
+		this.ownerID = (int)Convert.ToInt32 (split [22]);
+		smartfoxOwnerID = aOwnerID;
+		if (this.myLabel == null) {
+			GameObject g = NGUITools.AddChild (GameObject.Find ("UI Root"), this.labelPrefab);
+			this.myLabel = g.GetComponent<UILabel> ();
+			g.GetComponent<UIFollowTarget> ().target = this.gameObject.transform.FindChild ("PlayersName");
+		}
 		myLabel.text = this.name;
 		
 	}
@@ -261,8 +301,8 @@ public class HorseController : MonoBehaviour {
 			initClosestPoint();
 		bool blocked = false;
 		HorseController infront = this.horseInFront;
-		Debug.DrawRay(horseNose.position,this.transform.forward,Color.yellow);
-		Debug.DrawLine(this.transform.position,currentPoint.transform.position);
+//		Debug.DrawRay(horseNose.position,this.transform.forward,Color.yellow);
+//		Debug.DrawLine(this.transform.position,currentPoint.transform.position);
 		if(Vector3.Distance(currentPoint.transform.position,this.transform.position)<closenessToNextPoint) {
 			// We're looking ahead forward for the next race point now, lets decide how to deal with it.
 			bool changingRaceLines = false;
@@ -294,7 +334,6 @@ public class HorseController : MonoBehaviour {
 		} else {
 			if(infront!=null) {
 				float dist = Vector3.Distance(infront.transform.position,this.transform.position);
-
 				if(dist<MIN_FOLLOW_DISTANCE) {
 					if(this.speed>infront.speed) {
 						speed = infront.speed-0.1f;
@@ -322,7 +361,7 @@ public class HorseController : MonoBehaviour {
 		
 		if(useMidway&&prevPoint!=null) {
 			endPlace = (currentPoint.transform.position-prevPoint.transform.position)/2+prevPoint.transform.position;
-			Debug.DrawLine(endPlace,this.transform.position,Color.cyan);
+	//		Debug.DrawLine(endPlace,this.transform.position,Color.cyan);
 		}
 
 		
@@ -487,12 +526,10 @@ public class HorseController : MonoBehaviour {
 					   (this.horseInTargetLaneAtVector(here,behindDouble,allRacingLines[i])!=null)) {
 	
 					} else {
-						if(this.hasCamera)
-								Debug.Log ("Found a new racing line, new distance: "+altLineDistanceToFinish+" - Old Distance: "+currentDistanceToFinish+" Looking for shorter routes only: "+aShorterOnly);
 						this.myRacingLine = allRacingLines[i];
 						if(currentPoint.thisIndex>0)
 							prevPoint = allRacingLines[i].pointAtIndex(currentPoint.thisIndex-1);
-
+ 
 						this.currentPoint = allRacingLines[i].pointAtIndex(currentPoint.thisIndex);
 						useMidway = true;
 						return true;

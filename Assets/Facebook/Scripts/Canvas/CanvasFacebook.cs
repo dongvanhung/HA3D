@@ -1,10 +1,30 @@
-using System;
-using System.IO;
-using System.Collections.Generic;
-using UnityEngine;
+/**
+ * Copyright (c) 2014-present, Facebook, Inc. All rights reserved.
+ *
+ * You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
+ * copy, modify, and distribute this software in source code or binary form for use
+ * in connection with the web services and APIs provided by Facebook.
+ *
+ * As with any software that integrates with the Facebook platform, your use of
+ * this software is subject to the Facebook Developer Principles and Policies
+ * [http://developers.facebook.com/policy/]. This copyright notice shall be
+ * included in all copies or substantial portions of the software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 namespace Facebook.Unity.Canvas
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using UnityEngine;
+
     internal sealed class CanvasFacebook : FacebookBase, ICanvasFacebookImplementation
     {
         internal const string MethodAppRequests = "apprequests";
@@ -16,28 +36,16 @@ namespace Facebook.Unity.Canvas
         internal const string FacebookConnectURL = "https://connect.facebook.net";
         internal const string SDKVersion = "v2.4";
 
+        private const string AuthResponseKey = "authResponse";
+        private const string ResponseKey = "response";
+
         // The source code for our js sdk binding.
         private const string JSSDKBindingFileName = "JSSDKBindings";
-        private const string sdkLocale = "en_US";
-
-        private InitDelegate onInitComplete;
-        private HideUnityDelegate OnHideUnityDelegate;
+        private const string SDKLocale = "en_US";
 
         private string appId;
         private bool sdkDebug = false;
-        private string deepLink;
-
-        #region Facebook API
-
-        public override bool LimitEventUsage { get; set; }
-
-        public override string FacebookSdkVersion
-        {
-            get
-            {
-                return String.Format("Facebook.JS.SDK.{0}", SDKVersion);
-            }
-        }
+        private string appLinkUrl;
 
         public CanvasFacebook()
             : this(new CallbackManager())
@@ -47,6 +55,16 @@ namespace Facebook.Unity.Canvas
         public CanvasFacebook(CallbackManager callbackManager)
             : base(callbackManager)
         {
+        }
+
+        public override bool LimitEventUsage { get; set; }
+
+        public override string FacebookSdkVersion
+        {
+            get
+            {
+                return string.Format("Facebook.JS.SDK.{0}", SDKVersion);
+            }
         }
 
         private static string IntegrationMethodJs
@@ -64,7 +82,6 @@ namespace Facebook.Unity.Canvas
         }
 
         public override void Init(
-                InitDelegate onInitComplete,
                 string appId,
                 bool cookie,
                 bool logging,
@@ -73,20 +90,26 @@ namespace Facebook.Unity.Canvas
                 string channelUrl,
                 string authResponse,
                 bool frictionlessRequests,
-                HideUnityDelegate hideUnityDelegate)
+                HideUnityDelegate hideUnityDelegate,
+                InitDelegate onInitComplete)
         {
-            if (string.IsNullOrEmpty(appId))
-            {
-                throw new ArgumentException("appId cannot be null or empty!");
-            }
-
             if (CanvasFacebook.IntegrationMethodJs == null)
             {
                 throw new Exception("Cannot initialize facebook javascript");
             }
 
-            this.onInitComplete = onInitComplete;
-            this.OnHideUnityDelegate = hideUnityDelegate;
+            base.Init(
+                appId,
+                cookie,
+                logging,
+                status,
+                xfbml,
+                channelUrl,
+                authResponse,
+                frictionlessRequests,
+                hideUnityDelegate,
+                onInitComplete);
+
             Application.ExternalEval(CanvasFacebook.IntegrationMethodJs);
             this.appId = appId;
 
@@ -96,42 +119,41 @@ namespace Facebook.Unity.Canvas
             #endif
 
             MethodArguments parameters = new MethodArguments();
-            parameters.addNonNullOrEmptyParameter("appId", appId);
-            parameters.addNonNullParameter("cookie", cookie);
-            parameters.addNonNullParameter("logging", logging);
-            parameters.addNonNullParameter("status", status);
-            parameters.addNonNullParameter("xfbml", xfbml);
-            parameters.addNonNullOrEmptyParameter("channelUrl", channelUrl);
-            parameters.addNonNullOrEmptyParameter("authResponse", authResponse);
-            parameters.addNonNullParameter("frictionlessRequests", frictionlessRequests);
-            parameters.addNonNullOrEmptyParameter("version", SDKVersion);
+            parameters.AddString("appId", appId);
+            parameters.AddPrimative("cookie", cookie);
+            parameters.AddPrimative("logging", logging);
+            parameters.AddPrimative("status", status);
+            parameters.AddPrimative("xfbml", xfbml);
+            parameters.AddString("channelUrl", channelUrl);
+            parameters.AddString("authResponse", authResponse);
+            parameters.AddPrimative("frictionlessRequests", frictionlessRequests);
+            parameters.AddString("version", SDKVersion);
+
             // use 1/0 for booleans, otherwise you'll get strings "True"/"False"
             Application.ExternalCall(
                 "FBUnity.init",
                 isPlayer ? 1 : 0,
                 FacebookConnectURL,
-                sdkLocale,
-                sdkDebug ? 1 : 0,
+                SDKLocale,
+                this.sdkDebug ? 1 : 0,
                 parameters.ToJsonString(),
                 status ? 1 : 0);
-
         }
 
         public override void LogInWithPublishPermissions(
-            string scope,
+            IEnumerable<string> permissions,
             FacebookDelegate<ILoginResult> callback)
         {
             if (Screen.fullScreen)
             {
                 Screen.fullScreen = false;
             }
-            
-            AddAuthDelegate(callback);
-            Application.ExternalCall("FBUnity.login", scope);
+
+            Application.ExternalCall("FBUnity.login", permissions, CallbackManager.AddFacebookDelegate(callback));
         }
 
         public override void LogInWithReadPermissions(
-            string scope,
+            IEnumerable<string> permissions,
             FacebookDelegate<ILoginResult> callback)
         {
             if (Screen.fullScreen)
@@ -139,8 +161,7 @@ namespace Facebook.Unity.Canvas
                 Screen.fullScreen = false;
             }
 
-            AddAuthDelegate(callback);
-            Application.ExternalCall("FBUnity.login", scope);
+            Application.ExternalCall("FBUnity.login", permissions, CallbackManager.AddFacebookDelegate(callback));
         }
 
         public override void LogOut()
@@ -151,17 +172,17 @@ namespace Facebook.Unity.Canvas
 
         public override void AppRequest(
                 string message,
-                OGActionType actionType,
+                OGActionType? actionType,
                 string objectId,
-                string[] to,
-                List<object> filters,
-                string[] excludeIds,
+                IEnumerable<string> to,
+                IEnumerable<object> filters,
+                IEnumerable<string> excludeIds,
                 int? maxRecipients,
                 string data,
                 string title,
                 FacebookDelegate<IAppRequestResult> callback)
         {
-            ValidateAppRequestArgs(
+            this.ValidateAppRequestArgs(
                 message,
                 actionType,
                 objectId,
@@ -171,43 +192,43 @@ namespace Facebook.Unity.Canvas
                 maxRecipients,
                 data,
                 title,
-                callback
-            );
+                callback);
 
             MethodArguments args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("message", message);
-            args.addCommaSeperateListNonNull("to", to);
-            args.addNonNullOrEmptyParameter("action_type", actionType != null ? actionType.ToString() : null);
-            args.addNonNullOrEmptyParameter("object_id", objectId);
-            args.addNonNullParameter("filters", filters);
-            args.addNonNullParameter("exclude_ids", excludeIds);
-            args.addNonNullOrEmptyParameter("max_recipients", maxRecipients);
-            args.addNonNullOrEmptyParameter("data", data);
-            args.addNonNullOrEmptyParameter("title", title);
-            var call = new CanvasUIMethodCall<IResult>(this, MethodAppRequests, Constants.OnAppRequestsCompleteMethodName);
-            call.call(args);
+            args.AddString("message", message);
+            args.AddCommaSeparatedList("to", to);
+            args.AddString("action_type", actionType != null ? actionType.ToString() : null);
+            args.AddString("object_id", objectId);
+            args.AddList("filters", filters);
+            args.AddList("exclude_ids", excludeIds);
+            args.AddNullablePrimitive("max_recipients", maxRecipients);
+            args.AddString("data", data);
+            args.AddString("title", title);
+            var call = new CanvasUIMethodCall<IAppRequestResult>(this, MethodAppRequests, Constants.OnAppRequestsCompleteMethodName);
+            call.Callback = callback;
+            call.Call(args);
         }
-        
+
         public override void ActivateApp(string appId)
         {
             Application.ExternalCall("FBUnity.activateApp");
         }
 
         public override void ShareLink(
-            string contentURL,
+            Uri contentURL,
             string contentTitle,
             string contentDescription,
-            string photoURL, 
+            Uri photoURL,
             FacebookDelegate<IShareResult> callback)
         {
             MethodArguments args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("link", contentURL);
-            args.addNonNullOrEmptyParameter("name", contentTitle);
-            args.addNonNullOrEmptyParameter("description", contentDescription);
-            args.addNonNullOrEmptyParameter("picture", photoURL);
+            args.AddUri("link", contentURL);
+            args.AddString("name", contentTitle);
+            args.AddString("description", contentDescription);
+            args.AddUri("picture", photoURL);
             var call = new CanvasUIMethodCall<IShareResult>(this, MethodFeed, Constants.OnShareCompleteMethodName);
             call.Callback = callback;
-            call.call(args);
+            call.Call(args);
         }
 
         public override void FeedShare(
@@ -221,16 +242,16 @@ namespace Facebook.Unity.Canvas
             FacebookDelegate<IShareResult> callback)
         {
             MethodArguments args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("to", toId);
-            args.addNonNullOrEmptyParameter("link", link);
-            args.addNonNullOrEmptyParameter("name", linkName);
-            args.addNonNullOrEmptyParameter("caption", linkCaption);
-            args.addNonNullOrEmptyParameter("description", linkDescription);
-            args.addNonNullOrEmptyParameter("picture", picture);
-            args.addNonNullOrEmptyParameter("source", mediaSource);
+            args.AddString("to", toId);
+            args.AddUri("link", link);
+            args.AddString("name", linkName);
+            args.AddString("caption", linkCaption);
+            args.AddString("description", linkDescription);
+            args.AddUri("picture", picture);
+            args.AddString("source", mediaSource);
             var call = new CanvasUIMethodCall<IShareResult>(this, MethodFeed, Constants.OnShareCompleteMethodName);
             call.Callback = callback;
-            call.call(args);
+            call.Call(args);
         }
 
         public void Pay(
@@ -245,17 +266,17 @@ namespace Facebook.Unity.Canvas
             FacebookDelegate<IPayResult> callback)
         {
             MethodArguments args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("product", product);
-            args.addNonNullOrEmptyParameter("action", action);
-            args.addNonNullOrEmptyParameter("quantity", quantity);
-            args.addNonNullOrEmptyParameter("quantity_min", quantityMin);
-            args.addNonNullOrEmptyParameter("quantity_max", quantityMax);
-            args.addNonNullOrEmptyParameter("request_id", requestId);
-            args.addNonNullOrEmptyParameter("pricepoint_id", pricepointId);
-            args.addNonNullOrEmptyParameter("test_currency", testCurrency);
+            args.AddString("product", product);
+            args.AddString("action", action);
+            args.AddPrimative("quantity", quantity);
+            args.AddNullablePrimitive("quantity_min", quantityMin);
+            args.AddNullablePrimitive("quantity_max", quantityMax);
+            args.AddString("request_id", requestId);
+            args.AddString("pricepoint_id", pricepointId);
+            args.AddString("test_currency", testCurrency);
             var call = new CanvasUIMethodCall<IPayResult>(this, MethodPay, Constants.OnPayCompleteMethodName);
             call.Callback = callback;
-            call.call(args);
+            call.Call(args);
         }
 
         public override void GameGroupCreate(
@@ -265,13 +286,13 @@ namespace Facebook.Unity.Canvas
             FacebookDelegate<IGroupCreateResult> callback)
         {
             MethodArguments args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("name", name);
-            args.addNonNullOrEmptyParameter("description", description);
-            args.addNonNullOrEmptyParameter("privacy", privacy);
-            args.addNonNullOrEmptyParameter("display", "async");
+            args.AddString("name", name);
+            args.AddString("description", description);
+            args.AddString("privacy", privacy);
+            args.AddString("display", "async");
             var call = new CanvasUIMethodCall<IGroupCreateResult>(this, MethodGameGroupCreate, Constants.OnGroupCreateCompleteMethodName);
             call.Callback = callback;
-            call.call(args);
+            call.Call(args);
         }
 
         public override void GameGroupJoin(
@@ -279,20 +300,23 @@ namespace Facebook.Unity.Canvas
             FacebookDelegate<IGroupJoinResult> callback)
         {
             MethodArguments args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("id", id);
-            args.addNonNullOrEmptyParameter("display", "async");
+            args.AddString("id", id);
+            args.AddString("display", "async");
             var call = new CanvasUIMethodCall<IGroupJoinResult>(this, MethodGameGroupJoin, Constants.OnJoinGroupCompleteMethodName);
             call.Callback = callback;
-            call.call(args);
+            call.Call(args);
         }
 
-        public override void GetDeepLink(FacebookDelegate<IGetDeepLinkResult> callback)
+        public override void GetAppLink(FacebookDelegate<IAppLinkResult> callback)
         {
-            if (callback != null)
+            var result = new Dictionary<string, object>()
             {
-                callback(new GetDeepLinkResult(deepLink));
-                deepLink = "";
-            }
+                {
+                    "url", this.appLinkUrl
+                }
+            };
+            callback(new AppLinkResult(MiniJSON.Json.Serialize(result)));
+            this.appLinkUrl = string.Empty;
         }
 
         public override void AppEventsLogEvent(
@@ -304,8 +328,7 @@ namespace Facebook.Unity.Canvas
                 "FBUnity.logAppEvent",
                 logEvent,
                 valueToSum,
-                MiniJSON.Json.Serialize(parameters)
-            );
+                MiniJSON.Json.Serialize(parameters));
         }
 
         public override void AppEventsLogPurchase(
@@ -317,73 +340,28 @@ namespace Facebook.Unity.Canvas
                 "FBUnity.logPurchase",
                 logPurchase,
                 currency,
-                MiniJSON.Json.Serialize(parameters)
-            );
+                MiniJSON.Json.Serialize(parameters));
         }
 
-        #endregion
-
-        #region Facebook JS Bridge calls
-        public void OnFacebookAuthResponse(string responseJsonData)
-        {
-            var loginStatus = MiniJSON.Json.Deserialize(responseJsonData) as Dictionary<string, object>;
-
-            // if we don't have an authResponse that means the player
-            // hit cancel
-            if (loginStatus["authResponse"] == null)
-            {
-                OnAuthResponse(new LoginResult(responseJsonData));
-                return;
-            }
-
-            var authResponse = loginStatus["authResponse"] as Dictionary<string, object>;
-            AccessToken token;
-            if (!string.IsNullOrEmpty(authResponse["accessToken"] as string))
-            {
-                token = getAccessTokenFromAuthResponse(authResponse);
-            } else
-            {
-                token = null;
-            }
-
-            // Call all our callbacks.
-            OnAuthResponse(new LoginResult(responseJsonData, token));
-        }
-
-        public override void OnInitComplete(string responseJsonData)
-        {
-            OnFacebookAuthResponse(responseJsonData);
-            if (this.onInitComplete != null)
-            {
-                this.onInitComplete();
-            }
-        }
-
-        // TODO: Standarize with Android and iOS on complete handlers
         public override void OnLoginComplete(string responseJsonData)
         {
-            throw new NotImplementedException();
+            string formattedResponse = CanvasFacebook.FormatAuthResponse(responseJsonData);
+            this.OnAuthResponse(new LoginResult(formattedResponse));
         }
 
-        public override void OnGetDeepLinkComplete(string message)
+        public override void OnGetAppLinkComplete(string message)
         {
-            // We should never get here on canvas. We store the deep link on this object
-            // so no
+            // We should never get here on canvas. We store the app link on this object
+            // so should never hit this method.
             throw new NotImplementedException();
         }
 
         // used only to refresh the access token
         public void OnFacebookAuthResponseChange(string responseJsonData)
         {
-            var loginStatus = MiniJSON.Json.Deserialize(responseJsonData) as Dictionary<string, object>;
-
-            if (loginStatus["authResponse"] == null)
-            {
-                return;
-            }
-
-            var authResponse = loginStatus["authResponse"] as Dictionary<string, object>;
-            AccessToken.CurrentAccessToken = getAccessTokenFromAuthResponse(authResponse);
+            string formattedResponse = CanvasFacebook.FormatAuthResponse(responseJsonData);
+            var result = new LoginResult(formattedResponse);
+            AccessToken.CurrentAccessToken = result.AccessToken;
         }
 
         public void OnPayComplete(string responseJsonData)
@@ -423,46 +401,28 @@ namespace Facebook.Unity.Canvas
 
         public void OnUrlResponse(string url)
         {
-            deepLink = url;
+            this.appLinkUrl = url;
         }
 
-        public void OnHideUnity(bool hide)
+        private static string FormatAuthResponse(string result)
         {
-            if (this.OnHideUnityDelegate != null)
+            if (string.IsNullOrEmpty(result))
             {
-                this.OnHideUnityDelegate(hide);
-            }
-        }
-
-        #endregion
-
-        public static AccessToken getAccessTokenFromAuthResponse(
-            IDictionary<string, object> authResponse)
-        {
-            string accessToken = authResponse["accessToken"] as string;
-            DateTime accessTokenExpiresAt =
-                DateTime.Now.AddSeconds((Int64)authResponse["expiresIn"]);
-            // empty string is a "Start Now" user
-            string userId =
-                CanvasFacebook.StringFromDictionary(authResponse, "userID");
-            string permissionStr =
-                CanvasFacebook.StringFromDictionary(authResponse, "grantedScopes");
-            string[] permissions =
-                string.IsNullOrEmpty(permissionStr) ? new string[0] : permissionStr.Split(',');
-            return new AccessToken(accessToken, userId, accessTokenExpiresAt, permissions);
-        }
-
-        private static string StringFromDictionary(
-            IDictionary<string, object> dictionary,
-            string key)
-        {
-            object value;
-            if (!dictionary.TryGetValue(key, out value) && value != null)
-            {
-                return null;
+                return result;
             }
 
-            return value as string;
+            IDictionary<string, object> responseDictionary = GetFormattedResponseDictionary(result);
+            IDictionary<string, object> authResponse;
+            if (responseDictionary.TryGetValue(CanvasFacebook.AuthResponseKey, out authResponse))
+            {
+                responseDictionary.Remove(CanvasFacebook.AuthResponseKey);
+                foreach (var item in authResponse)
+                {
+                    responseDictionary[item.Key] = item.Value;
+                }
+            }
+
+            return MiniJSON.Json.Serialize(responseDictionary);
         }
 
         // This method converts the format of the result to match the format
@@ -473,26 +433,26 @@ namespace Facebook.Unity.Canvas
             {
                 return result;
             }
-            
+
+            return MiniJSON.Json.Serialize(GetFormattedResponseDictionary(result));
+        }
+
+        private static IDictionary<string, object> GetFormattedResponseDictionary(string result)
+        {
             var resultDictionary = (IDictionary<string, object>)MiniJSON.Json.Deserialize(result);
-            object response;
-            if (resultDictionary.TryGetValue("response", out response))
+            IDictionary<string, object> responseDictionary;
+            if (resultDictionary.TryGetValue(CanvasFacebook.ResponseKey, out responseDictionary))
             {
-                string responseStr = response as string;
-                if (responseStr != null) {
-                    var responseDictionary = (IDictionary<string, object>)MiniJSON.Json.Deserialize(responseStr);
-                    object callbackId;
-                    if (resultDictionary.TryGetValue(Constants.CallbackIdKey, out callbackId))
-                    {
-                        responseDictionary[Constants.CallbackIdKey] = callbackId;
-                    }
-                    
-                    return MiniJSON.Json.Serialize(responseDictionary);
+                object callbackId;
+                if (resultDictionary.TryGetValue(Constants.CallbackIdKey, out callbackId))
+                {
+                    responseDictionary[Constants.CallbackIdKey] = callbackId;
                 }
+
+                return responseDictionary;
             }
-            
-            // No 'response' in string return origional string
-            return result;
+
+            return resultDictionary;
         }
 
         private class CanvasUIMethodCall<T> : MethodCall<T> where T : IResult
@@ -507,7 +467,7 @@ namespace Facebook.Unity.Canvas
                 this.callbackMethod = callbackMethod;
             }
 
-            public override void call(MethodArguments args)
+            public override void Call(MethodArguments args)
             {
                 this.UI(this.MethodName, args, this.Callback);
             }
@@ -523,8 +483,8 @@ namespace Facebook.Unity.Canvas
                 }
 
                 var clonedArgs = new MethodArguments(args);
-                clonedArgs.addNonNullOrEmptyParameter("app_id", this.canvasImpl.appId);
-                clonedArgs.addNonNullOrEmptyParameter("method", method);
+                clonedArgs.AddString("app_id", this.canvasImpl.appId);
+                clonedArgs.AddString("method", method);
                 var uniqueId = this.canvasImpl.CallbackManager.AddFacebookDelegate(callback);
                 Application.ExternalCall("FBUnity.ui", clonedArgs.ToJsonString(), uniqueId, this.callbackMethod);
             }

@@ -1,23 +1,37 @@
-﻿using UnityEngine;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+/**
+ * Copyright (c) 2014-present, Facebook, Inc. All rights reserved.
+ *
+ * You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
+ * copy, modify, and distribute this software in source code or binary form for use
+ * in connection with the web services and APIs provided by Facebook.
+ *
+ * As with any software that integrates with the Facebook platform, your use of
+ * this software is subject to the Facebook Developer Principles and Policies
+ * [http://developers.facebook.com/policy/]. This copyright notice shall be
+ * included in all copies or substantial portions of the software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 namespace Facebook.Unity
 {
-    internal abstract class ResultBase : IInternalResult {
-        public virtual string Error { get; protected set; }
-        public virtual IDictionary<string, object> ResultDictionary { get; protected set; }
-        public virtual string RawResult { get; protected set; }
-        public virtual bool Cancelled { get; protected set; }
-        public virtual string CallbackId { get; protected set; }
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
 
+    internal abstract class ResultBase : IInternalResult
+    {
         internal ResultBase(string result)
         {
             string error = null;
             bool cancelled = false;
             string callbackId = null;
-            if (result != null)
+            if (!string.IsNullOrEmpty(result))
             {
                 var dictionary = Facebook.MiniJSON.Json.Deserialize(result) as Dictionary<string, object>;
                 if (dictionary != null)
@@ -29,15 +43,35 @@ namespace Facebook.Unity
                 }
             }
 
-            init(result, error, cancelled, callbackId);
+            this.Init(result, error, cancelled, callbackId);
         }
 
         internal ResultBase(string result, string error, bool cancelled)
         {
-            init(result, error, cancelled, null);
+            this.Init(result, error, cancelled, null);
         }
 
-        protected void init(string result, string error, bool cancelled, string callbackId)
+        public virtual string Error { get; protected set; }
+
+        public virtual IDictionary<string, object> ResultDictionary { get; protected set; }
+
+        public virtual string RawResult { get; protected set; }
+
+        public virtual bool Cancelled { get; protected set; }
+
+        public virtual string CallbackId { get; protected set; }
+
+        public override string ToString()
+        {
+            return string.Format(
+                "[BaseResult: Error={0}, Result={1}, RawResult={2}, Cancelled={3}]",
+                this.Error,
+                this.ResultDictionary,
+                this.RawResult,
+                this.Cancelled);
+        }
+
+        protected void Init(string result, string error, bool cancelled, string callbackId)
         {
             this.RawResult = result;
             this.Cancelled = cancelled;
@@ -103,17 +137,12 @@ namespace Facebook.Unity
 
             // Check for cancel string
             string callbackId;
-            if (result.TryGetValue<string>("callback_id", out callbackId))
+            if (result.TryGetValue<string>(Constants.CallbackIdKey, out callbackId))
             {
                 return callbackId;
             }
 
             return null;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("[BaseResult: Error={0}, Result={1}, RawResult={2}, Cancelled={3}]", Error, ResultDictionary, RawResult, Cancelled);
         }
     }
 }

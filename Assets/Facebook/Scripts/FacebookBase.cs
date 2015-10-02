@@ -1,16 +1,42 @@
-using System;
-using System.Collections.Generic;
-using UnityEngine;
+/**
+ * Copyright (c) 2014-present, Facebook, Inc. All rights reserved.
+ *
+ * You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
+ * copy, modify, and distribute this software in source code or binary form for use
+ * in connection with the web services and APIs provided by Facebook.
+ *
+ * As with any software that integrates with the Facebook platform, your use of
+ * this software is subject to the Facebook Developer Principles and Policies
+ * [http://developers.facebook.com/policy/]. This copyright notice shall be
+ * included in all copies or substantial portions of the software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 namespace Facebook.Unity
 {
+    using System;
+    using System.Collections.Generic;
+    using UnityEngine;
+
     internal abstract class FacebookBase : IFacebookImplementation
     {
-        private IList<FacebookDelegate<ILoginResult>> authDelegates = new List<FacebookDelegate<ILoginResult>>();
-        public abstract bool LimitEventUsage { get; set; }
-        public abstract string FacebookSdkVersion { get; }
+        private InitDelegate onInitCompleteDelegate;
+        private HideUnityDelegate onHideUnityDelegate;
 
-        protected CallbackManager CallbackManager { get; private set; }
+        protected FacebookBase(CallbackManager callbackManager)
+        {
+            this.CallbackManager = callbackManager;
+        }
+
+        public abstract bool LimitEventUsage { get; set; }
+
+        public abstract string FacebookSdkVersion { get; }
 
         public bool LoggedIn
         {
@@ -20,13 +46,9 @@ namespace Facebook.Unity
             }
         }
 
-        protected FacebookBase(CallbackManager callbackManager)
-        {
-            this.CallbackManager = callbackManager;
-        }
+        protected CallbackManager CallbackManager { get; private set; }
 
-        public abstract void Init(
-            InitDelegate onInitComplete,
+        public virtual void Init(
             string appId,
             bool cookie,
             bool logging,
@@ -35,14 +57,19 @@ namespace Facebook.Unity
             string channelUrl,
             string authResponse,
             bool frictionlessRequests,
-            HideUnityDelegate hideUnityDelegate);
+            HideUnityDelegate hideUnityDelegate,
+            InitDelegate onInitComplete)
+        {
+            this.onHideUnityDelegate = hideUnityDelegate;
+            this.onInitCompleteDelegate = onInitComplete;
+        }
 
         public abstract void LogInWithPublishPermissions(
-            string scope,
+            IEnumerable<string> scope,
             FacebookDelegate<ILoginResult> callback);
 
         public abstract void LogInWithReadPermissions(
-            string scope,
+            IEnumerable<string> scope,
             FacebookDelegate<ILoginResult> callback);
 
         public virtual void LogOut()
@@ -52,34 +79,34 @@ namespace Facebook.Unity
 
         public void AppRequest(
             string message,
-            string[] to = null,
-            List<object> filters = null,
-            string[] excludeIds = null,
+            IEnumerable<string> to = null,
+            IEnumerable<object> filters = null,
+            IEnumerable<string> excludeIds = null,
             int? maxRecipients = null,
             string data = "",
             string title = "",
             FacebookDelegate<IAppRequestResult> callback = null)
         {
-            AppRequest(message, null, null, to, filters, excludeIds, maxRecipients, data, title, callback);
+            this.AppRequest(message, null, null, to, filters, excludeIds, maxRecipients, data, title, callback);
         }
 
         public abstract void AppRequest(
             string message,
-            OGActionType actionType,
+            OGActionType? actionType,
             string objectId,
-            string[] to,
-            List<object> filters,
-            string[] excludeIds,
+            IEnumerable<string> to,
+            IEnumerable<object> filters,
+            IEnumerable<string> excludeIds,
             int? maxRecipients,
             string data,
             string title,
             FacebookDelegate<IAppRequestResult> callback);
 
         public abstract void ShareLink(
-            string contentURL,
+            Uri contentURL,
             string contentTitle,
             string contentDescription,
-            string photoURL,
+            Uri photoURL,
             FacebookDelegate<IShareResult> callback);
 
         public abstract void FeedShare(
@@ -95,19 +122,20 @@ namespace Facebook.Unity
         public void API(
             string query,
             HttpMethod method,
-            Dictionary<string, string> formData,
+            IDictionary<string, string> formData,
             FacebookDelegate<IGraphResult> callback)
         {
-            Dictionary<string, string> inputFormData;
+            IDictionary<string, string> inputFormData;
+
             // Copy the formData by value so it's not vulnerable to scene changes and object deletions
-            inputFormData = (formData != null) ? CopyByValue(formData) : new Dictionary<string, string>();
+            inputFormData = (formData != null) ? this.CopyByValue(formData) : new Dictionary<string, string>();
             if (!inputFormData.ContainsKey(Constants.AccessTokenKey) && !query.Contains("access_token="))
             {
                 inputFormData[Constants.AccessTokenKey] =
-                    FB.IsLoggedIn ? AccessToken.CurrentAccessToken.TokenString : "";
+                    FB.IsLoggedIn ? AccessToken.CurrentAccessToken.TokenString : string.Empty;
             }
 
-            AsyncRequestString.Request(GetGraphUrl(query), method, inputFormData, callback);
+            AsyncRequestString.Request(this.GetGraphUrl(query), method, inputFormData, callback);
         }
 
         public void API(
@@ -116,19 +144,18 @@ namespace Facebook.Unity
             WWWForm formData,
             FacebookDelegate<IGraphResult> callback)
         {
-
             if (formData == null)
             {
                 formData = new WWWForm();
             }
 
             string tokenString = (AccessToken.CurrentAccessToken != null) ?
-                AccessToken.CurrentAccessToken.TokenString : "";
+                AccessToken.CurrentAccessToken.TokenString : string.Empty;
             formData.AddField(
                 Constants.AccessTokenKey,
                 tokenString);
 
-            AsyncRequestString.Request(GetGraphUrl(query), method, formData, callback);
+            AsyncRequestString.Request(this.GetGraphUrl(query), method, formData, callback);
         }
 
         public abstract void GameGroupCreate(
@@ -143,7 +170,7 @@ namespace Facebook.Unity
 
         public abstract void ActivateApp(string appId = null);
 
-        public abstract void GetDeepLink(FacebookDelegate<IGetDeepLinkResult> callback);
+        public abstract void GetAppLink(FacebookDelegate<IAppLinkResult> callback);
 
         public abstract void AppEventsLogEvent(
             string logEvent,
@@ -155,7 +182,22 @@ namespace Facebook.Unity
             string currency,
             Dictionary<string, object> parameters);
 
-        public abstract void OnInitComplete(string message);
+        public virtual void OnHideUnity(bool isGameShown)
+        {
+            if (this.onHideUnityDelegate != null)
+            {
+                this.onHideUnityDelegate(isGameShown);
+            }
+        }
+
+        public virtual void OnInitComplete(string message)
+        {
+            this.OnLoginComplete(message);
+            if (this.onInitCompleteDelegate != null)
+            {
+                this.onInitCompleteDelegate();
+            }
+        }
 
         public abstract void OnLoginComplete(string message);
 
@@ -164,32 +206,23 @@ namespace Facebook.Unity
             AccessToken.CurrentAccessToken = null;
         }
 
-        public abstract void OnGetDeepLinkComplete(string message);
+        public abstract void OnGetAppLinkComplete(string message);
 
         public abstract void OnGroupCreateComplete(string message);
+
         public abstract void OnGroupJoinComplete(string message);
 
         public abstract void OnAppRequestsComplete(string message);
 
         public abstract void OnShareLinkComplete(string message);
 
-        protected void AddAuthDelegate(FacebookDelegate<ILoginResult> callback)
-        {
-            authDelegates.Add(callback);
-        }
-
-        private void GetAuthResponse(FacebookDelegate<ILoginResult> callback)
-        {
-            AddAuthDelegate(callback);
-        }
-
         protected void ValidateAppRequestArgs(
             string message,
-            OGActionType actionType,
+            OGActionType? actionType,
             string objectId,
-            string[] to = null,
-            List<object> filters = null,
-            string[] excludeIds = null,
+            IEnumerable<string> to = null,
+            IEnumerable<object> filters = null,
+            IEnumerable<string> excludeIds = null,
             int? maxRecipients = null,
             string data = "",
             string title = "",
@@ -200,7 +233,7 @@ namespace Facebook.Unity
                 throw new ArgumentNullException("message", "message cannot be null or empty!");
             }
 
-            if (!string.IsNullOrEmpty(objectId) && !(actionType == OGActionType.AskFor || actionType == OGActionType.Send))
+            if (!string.IsNullOrEmpty(objectId) && !(actionType == OGActionType.ASKFOR || actionType == OGActionType.SEND))
             {
                 throw new ArgumentNullException("objectId", "Object ID must be set if and only if action type is SEND or ASKFOR");
             }
@@ -211,7 +244,7 @@ namespace Facebook.Unity
             }
         }
 
-        protected void OnAuthResponse(ILoginResult result)
+        protected void OnAuthResponse(LoginResult result)
         {
             // If the login is cancelled we won't have a access token.
             // Don't overwrite a valid token
@@ -220,23 +253,17 @@ namespace Facebook.Unity
                 AccessToken.CurrentAccessToken = result.AccessToken;
             }
 
-            foreach (FacebookDelegate<ILoginResult> callback in authDelegates)
-            {
-                if (callback != null)
-                {
-                    callback(result);
-                }
-            }
-            authDelegates.Clear();
+            this.CallbackManager.OnFacebookResponse(result);
         }
 
-        private Dictionary<string, string> CopyByValue(Dictionary<string, string> data)
+        private IDictionary<string, string> CopyByValue(IDictionary<string, string> data)
         {
             var newData = new Dictionary<string, string>(data.Count);
             foreach (KeyValuePair<string, string> kvp in data)
             {
-                newData[kvp.Key] = String.Copy(kvp.Value);
+                newData[kvp.Key] = string.Copy(kvp.Value);
             }
+
             return newData;
         }
 
@@ -246,6 +273,7 @@ namespace Facebook.Unity
             {
                 query = "/" + query;
             }
+
             return Constants.GraphUrl + query;
         }
     }

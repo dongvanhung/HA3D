@@ -27,7 +27,9 @@ public class SmartfoxConnectionHandler : MonoBehaviour {
 	public delegate void OnLoggedIn(SFSObject aLoginInfo,SFSArray aHorses);
 	public OnLoggedIn onLoggedIn;
 
-	
+	public delegate void OnHorsesVariableChanged(SFSObject aObject);
+	public OnHorsesVariableChanged onHorsesVariableChanged;
+
 	public delegate void OnRaceRoomStatusChanged(int aStatus);
 	public OnRaceRoomStatusChanged onRaceStatusChange;
 	public delegate void OnRaceRoomJoined(SFSRoom aRoom);
@@ -74,11 +76,11 @@ public class SmartfoxConnectionHandler : MonoBehaviour {
 		DontDestroyOnLoad(this);
 		// Start connecting after 1 second
 		label = "Waiting To Connect";
-		#if UNITY_WEBGL
+		/*#if UNITY_WEBGL
 		//	this.doConnectToServer();
 		#else
 			StartCoroutine(autoConnect());
-		#endif	
+		#endif	*/
 	}
 	
 	private IEnumerator autoConnect() {
@@ -90,7 +92,16 @@ public class SmartfoxConnectionHandler : MonoBehaviour {
 		if (sfs != null)
 			sfs.ProcessEvents();
 	}
-
+	public int smartfoxuid {
+		get {
+			if(sfs!=null) {
+				if(sfs.IsConnected) {
+					return sfs.MySelf.Id;
+				}
+			}
+			return 0;
+		}
+	}
 	public void setMyName(string aName) {
 		UserVariable u = new SFSUserVariable("n",aName);
 		List<UserVariable> l = new List<UserVariable>();
@@ -228,11 +239,17 @@ public class SmartfoxConnectionHandler : MonoBehaviour {
 				onRaceHostChanged(r.GetStringValue()=="h"+this.sfs.MySelf.Name);
 			}
 		}
+		r = room.GetVariable ("hss");
+		if (r != null) {
+		 if(this.onHorsesVariableChanged!=null) {
+				onHorsesVariableChanged((SFSObject) r.GetSFSObjectValue());
+			}
+		}
 	}
 	public void sendMessage(string aCommand,SFSObject aObject) {
 		if(sfs.IsConnected) {
 			sfs.Send(new ExtensionRequest(aCommand,aObject));
-		}
+		} 
 	}	
 	public void sendRaceMessage(string aCommand,SFSObject aObject) {
 		if(sfs.IsConnected) {

@@ -19,13 +19,14 @@
 #import <FBSDKShareKit/FBSDKShareKit.h>
 
 extern NSString *const FBUnityMessageName_OnAppRequestsComplete;
-extern NSString *const FBUnityMessageName_OnGetDeepLinkComplete;
+extern NSString *const FBUnityMessageName_OnGetAppLinkComplete;
 extern NSString *const FBUnityMessageName_OnGroupCreateComplete;
 extern NSString *const FBUnityMessageName_OnGroupJoinComplete;
 extern NSString *const FBUnityMessageName_OnInitComplete;
 extern NSString *const FBUnityMessageName_OnLoginComplete;
 extern NSString *const FBUnityMessageName_OnLogoutComplete;
 extern NSString *const FBUnityMessageName_OnShareLinkComplete;
+extern NSString *const FBUnityMessageName_OnFetchDeferredAppLinkComplete;
 
 /*!
  @abstract A helper class that implements various FBSDK delegates in order to send

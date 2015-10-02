@@ -1,65 +1,86 @@
-using UnityEngine;
-using System.Collections.Generic;
+/**
+ * Copyright (c) 2014-present, Facebook, Inc. All rights reserved.
+ *
+ * You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
+ * copy, modify, and distribute this software in source code or binary form for use
+ * in connection with the web services and APIs provided by Facebook.
+ *
+ * As with any software that integrates with the Facebook platform, your use of
+ * this software is subject to the Facebook Developer Principles and Policies
+ * [http://developers.facebook.com/policy/]. This copyright notice shall be
+ * included in all copies or substantial portions of the software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 namespace Facebook.Unity.Canvas
 {
+    using System.Collections.Generic;
+    using UnityEngine;
+
     internal class JsBridge : MonoBehaviour
     {
         private ICanvasFacebookCallbackHandler facebook;
 
-        void Start()
+        public void Start()
         {
-            facebook = ComponentFactory.GetComponent<CanvasFacebookGameObject>(ComponentFactory.IfNotExist.ReturnNull);
+            this.facebook = ComponentFactory.GetComponent<CanvasFacebookGameObject>(
+                ComponentFactory.IfNotExist.ReturnNull);
         }
 
-        void OnFacebookAuthResponse(string responseJsonData = "")
+        public void OnLoginComplete(string responseJsonData = "")
         {
-            facebook.OnFacebookAuthResponse(responseJsonData);
+            this.facebook.OnLoginComplete(responseJsonData);
         }
 
-        void OnFacebookAuthResponseChange(string responseJsonData = "")
+        public void OnFacebookAuthResponseChange(string responseJsonData = "")
         {
-            facebook.OnFacebookAuthResponseChange(responseJsonData);
+            this.facebook.OnFacebookAuthResponseChange(responseJsonData);
         }
 
-        void OnPayComplete(string responseJsonData = "")
+        public void OnPayComplete(string responseJsonData = "")
         {
-            facebook.OnPayComplete(responseJsonData);
+            this.facebook.OnPayComplete(responseJsonData);
         }
 
-        void OnAppRequestsComplete(string responseJsonData = "")
+        public void OnAppRequestsComplete(string responseJsonData = "")
         {
-            facebook.OnAppRequestsComplete(responseJsonData);
+            this.facebook.OnAppRequestsComplete(responseJsonData);
         }
 
-        void OnShareLinkComplete(string responseJsonData = "")
+        public void OnShareLinkComplete(string responseJsonData = "")
         {
-            facebook.OnShareLinkComplete(responseJsonData);
+            this.facebook.OnShareLinkComplete(responseJsonData);
         }
 
-        void OnGroupCreateComplete(string responseJsonData = "")
+        public void OnGroupCreateComplete(string responseJsonData = "")
         {
-            facebook.OnGroupCreateComplete(responseJsonData);;
+            this.facebook.OnGroupCreateComplete(responseJsonData);
         }
 
-        void OnJoinGroupComplete(string responseJsonData = "")
+        public void OnJoinGroupComplete(string responseJsonData = "")
         {
-            facebook.OnGroupJoinComplete(responseJsonData);
+            this.facebook.OnGroupJoinComplete(responseJsonData);
         }
 
-        void OnFacebookFocus(string state)
+        public void OnFacebookFocus(string state)
         {
-            facebook.OnHideUnity((state != "hide"));
+            this.facebook.OnHideUnity(state != "hide");
         }
 
-        void OnInitComplete(string responseJsonData = "")
+        public void OnInitComplete(string responseJsonData = "")
         {
-            facebook.OnInitComplete(responseJsonData);
+            this.facebook.OnInitComplete(responseJsonData);
         }
 
-        void OnUrlResponse(string url = "")
+        public void OnUrlResponse(string url = "")
         {
-            facebook.OnUrlResponse(url);
+            this.facebook.OnUrlResponse(url);
         }
     }
 }

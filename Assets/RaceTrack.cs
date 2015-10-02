@@ -18,7 +18,7 @@ public class RaceTrack : MonoBehaviour {
 
 	public bool raceStarted = false;
 	public bool iAmHost = false;
-
+	public int round = 0;
 	public const float MIN_TIME_BETWEEN_BROADCAST = 0.25f;
 
 	public float lastBroadcastTime;
@@ -29,12 +29,12 @@ public class RaceTrack : MonoBehaviour {
 			return;
 		}
 		REF = this;
-		if(debugRace) {
+		/*if(debugRace) {
 			GameObject[] g = GameObject.FindGameObjectsWithTag("Player");
 			for(int i = 0;i<g.Length;i++) {
 				g[i].GetComponent<HorseController>().debugInit(PlayerMain.LOCAL.horses[i]);
 			}
-		}
+		}*/
 
 		for(int i = 0;i<racingLines.Count;i++) {
 			racingLines[i].initLine(i);
@@ -101,19 +101,30 @@ public class RaceTrack : MonoBehaviour {
 			}
 			for(int i = 0;i<sortedHorses.Count;i++) {
 				Vector3 posDiff = sortedHorses[i].transform.position-sortedHorses[i].originalPosition;
-				Debug.Log ("Position was wrong by: "+posDiff+" last applied speed was: "+sortedHorses[i].lastAppliedSpeed);
+			//	Debug.Log ("Position was wrong by: "+posDiff+" last applied speed was: "+sortedHorses[i].lastAppliedSpeed);
 			}
 		}
 		
 	}
 	private void onRaceStatusChange(int aStatus) {
 		if(this.iAmHost&&aStatus==1) {
-			createAndDeclareDebugHorses();
+			createAndDeclareNPCHorses();
 		}
 	}
-	private void createAndDeclareDebugHorses() {
+	private void createAndDeclareNPCHorses() {
 		if(this.iAmHost) {
-		
+			HorseController myHorse = null;
+			for(int i = 0;i<sortedHorses.Count;i++) {
+				if(sortedHorses[i].ownerID==PlayerMain.LOCAL.playerID) {
+					myHorse = sortedHorses[i];
+				}
+			}
+			SFSObject o = new SFSObject();
+			for(int i = 0;i<sortedHorses.Count;i++) {
+				sortedHorses[i].makeNPC(myHorse);
+				o.PutSFSObject("h"+i,sortedHorses[i].asSFSObject);
+			}
+			SmartfoxConnectionHandler.REF.sendRaceMessage("dn",o);
 		}
 	}
 
@@ -145,8 +156,10 @@ public class RaceTrack : MonoBehaviour {
 				for(int i = 0;i<g.Length;i++) {
 					sortedHorses.Add(g[i].GetComponent<HorseController>());
 				}
+				sortedHorses.Sort(delegate(HorseController a, HorseController b) { return a.horseIndex.CompareTo(b.horseIndex); });
 			}
-			sortedHorses.Sort(delegate(HorseController a, HorseController b) { return a.distanceFromFinish.CompareTo(b.distanceFromFinish); });
+			if(this.raceStarted)
+				sortedHorses.Sort(delegate(HorseController a, HorseController b) { return a.distanceFromFinish.CompareTo(b.distanceFromFinish); });
 		}
 	}
 }

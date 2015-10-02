@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Facebook.Unity;
+using System.Collections.Generic;
 
 public class FacebookHandler : MonoBehaviour {
 
@@ -15,9 +16,9 @@ public class FacebookHandler : MonoBehaviour {
 	private void onInitComplete() {
 		debug = "Init Complete";
 		Debug.Log ("Facebook Init Complete!");
-
-		FB.LogInWithReadPermissions("email",onLoggedIn);
-	}
+		List<string> l = new List<string>(){"public_profile", "email", "user_friends"};
+		FB.LogInWithReadPermissions(l,onLoggedIn); 
+	} 
 	private void onHideUnity(bool aIsShowing) {
 		Debug.Log("OnHideUnity");
 	}

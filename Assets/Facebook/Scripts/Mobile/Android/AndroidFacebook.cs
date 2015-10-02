@@ -1,13 +1,45 @@
-using System;
-using System.Collections.Generic;
+/**
+ * Copyright (c) 2014-present, Facebook, Inc. All rights reserved.
+ *
+ * You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
+ * copy, modify, and distribute this software in source code or binary form for use
+ * in connection with the web services and APIs provided by Facebook.
+ *
+ * As with any software that integrates with the Facebook platform, your use of
+ * this software is subject to the Facebook Developer Principles and Policies
+ * [http://developers.facebook.com/policy/]. This copyright notice shall be
+ * included in all copies or substantial portions of the software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 namespace Facebook.Unity.Mobile.Android
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     internal sealed class AndroidFacebook : MobileFacebook
     {
         // This class holds all the of the wrapper methods that we call into
         private bool limitEventUsage;
-        private IAndroidJavaClass fbJava;
+        private IAndroidJavaClass facebookJava;
+
+        public AndroidFacebook() : this(new FBJavaClass(), new CallbackManager())
+        {
+        }
+
+        public AndroidFacebook(IAndroidJavaClass facebookJavaClass, CallbackManager callbackManager)
+            : base(callbackManager)
+        {
+            this.KeyHash = string.Empty;
+            this.facebookJava = facebookJavaClass;
+        }
 
         // key Hash used for Android SDK
         public string KeyHash { get; private set; }
@@ -16,12 +48,13 @@ namespace Facebook.Unity.Mobile.Android
         {
             get
             {
-                return limitEventUsage;
+                return this.limitEventUsage;
             }
+
             set
             {
-                limitEventUsage = value;
-                CallFB("SetLimitEventUsage", value.ToString());
+                this.limitEventUsage = value;
+                this.CallFB("SetLimitEventUsage", value.ToString());
             }
         }
 
@@ -29,29 +62,12 @@ namespace Facebook.Unity.Mobile.Android
         {
             get
             {
-                string buildVersion = this.fbJava.CallStatic<string>("GetSdkVersion");
-                return String.Format("Facebook.Android.SDK.{0}", buildVersion);
+                string buildVersion = this.facebookJava.CallStatic<string>("GetSdkVersion");
+                return string.Format("Facebook.Android.SDK.{0}", buildVersion);
             }
         }
 
-        public AndroidFacebook() : this(new FBJavaClass(), new CallbackManager())
-        {
-        }
-
-        public AndroidFacebook(IAndroidJavaClass fbJavaClass, CallbackManager callbackManager)
-            : base(callbackManager)
-        {
-            this.KeyHash = "";
-            this.fbJava = fbJavaClass;
-        }
-
-        private void CallFB(string method, string args)
-        {
-            this.fbJava.CallStatic(method, args);
-        }
-
         public override void Init(
-            InitDelegate onInitComplete,
             string appId,
             bool cookie,
             bool logging,
@@ -60,69 +76,78 @@ namespace Facebook.Unity.Mobile.Android
             string channelUrl,
             string authResponse,
             bool frictionlessRequests,
-            HideUnityDelegate hideUnityDelegate)
+            HideUnityDelegate hideUnityDelegate,
+            InitDelegate onInitComplete)
         {
-            if (string.IsNullOrEmpty(appId))
-            {
-                throw new ArgumentException("appId cannot be null or empty!");
-            }
+            base.Init(
+                appId,
+                cookie,
+                logging,
+                status,
+                xfbml,
+                channelUrl,
+                authResponse,
+                frictionlessRequests,
+                hideUnityDelegate,
+                onInitComplete);
 
             var args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("appId", appId);
-            args.addNonNullParameter("cookie", cookie);
-            args.addNonNullParameter("logging", logging);
-            args.addNonNullParameter("status", status);
-            args.addNonNullParameter("xfbml", xfbml);
-            args.addNonNullOrEmptyParameter("channelUrl", channelUrl);
-            args.addNonNullOrEmptyParameter("authResponse", authResponse);
-            args.addNonNullParameter("frictionlessRequests", frictionlessRequests);
+            args.AddString("appId", appId);
+            args.AddPrimative("cookie", cookie);
+            args.AddPrimative("logging", logging);
+            args.AddPrimative("status", status);
+            args.AddPrimative("xfbml", xfbml);
+            args.AddString("channelUrl", channelUrl);
+            args.AddString("authResponse", authResponse);
+            args.AddPrimative("frictionlessRequests", frictionlessRequests);
             var initCall = new JavaMethodCall<IResult>(this, "Init");
-            initCall.call(args);
-            this.CallFB("SetUserAgentSuffix",
-                        String.Format("Unity.{0}", Facebook.Unity.FacebookSdkVersion.Build));
+            initCall.Call(args);
+            this.CallFB(
+                "SetUserAgentSuffix",
+                string.Format("Unity.{0}", Facebook.Unity.FacebookSdkVersion.Build));
         }
 
-        public override void LogInWithReadPermissions (
-            string scope,
+        public override void LogInWithReadPermissions(
+            IEnumerable<string> permissions,
             FacebookDelegate<ILoginResult> callback)
         {
             MethodArguments args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("scope", scope);
-            AddAuthDelegate (callback);
-            var loginCall = new JavaMethodCall<IResult>(this, "LoginWithReadPermissions");
-            loginCall.call(args);
+            args.AddCommaSeparatedList("scope", permissions);
+            var loginCall = new JavaMethodCall<ILoginResult>(this, "LoginWithReadPermissions");
+            loginCall.Callback = callback;
+            loginCall.Call(args);
         }
 
-        public override void LogInWithPublishPermissions (
-            string scope,
+        public override void LogInWithPublishPermissions(
+            IEnumerable<string> permissions,
             FacebookDelegate<ILoginResult> callback)
         {
             MethodArguments args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("scope", scope);
-            var loginCall = new JavaMethodCall<LoginResult>(this, "LoginWithPublishPermissions");
-            AddAuthDelegate (callback);
-            loginCall.call(args);
+            args.AddCommaSeparatedList("scope", permissions);
+            var loginCall = new JavaMethodCall<ILoginResult>(this, "LoginWithPublishPermissions");
+            loginCall.Callback = callback;
+            loginCall.Call(args);
         }
 
         public override void LogOut()
         {
             var logoutCall = new JavaMethodCall<IResult>(this, "Logout");
-            logoutCall.call();
+            logoutCall.Call();
         }
 
         public override void AppRequest(
             string message,
-            OGActionType actionType,
+            OGActionType? actionType,
             string objectId,
-            string[] to,
-            List<object> filters,
-            string[] excludeIds,
+            IEnumerable<string> to,
+            IEnumerable<object> filters,
+            IEnumerable<string> excludeIds,
             int? maxRecipients,
             string data,
             string title,
             FacebookDelegate<IAppRequestResult> callback)
         {
-            ValidateAppRequestArgs(
+            this.ValidateAppRequestArgs(
                 message,
                 actionType,
                 objectId,
@@ -132,28 +157,28 @@ namespace Facebook.Unity.Mobile.Android
                 maxRecipients,
                 data,
                 title,
-                callback
-            );
+                callback);
 
             MethodArguments args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("message", message);
-            args.addNonNullOrEmptyParameter("action_type", actionType != null ? actionType.ToString() : null);
-            args.addNonNullOrEmptyParameter("object_id", objectId);
-            args.addCommaSeperateListNonNull("to", to);
-            if (filters != null && filters.Count > 0)
+            args.AddString("message", message);
+            args.AddNullablePrimitive("action_type", actionType);
+            args.AddString("object_id", objectId);
+            args.AddCommaSeparatedList("to", to);
+            if (filters != null && filters.Any())
             {
-                string mobileFilter = filters[0] as string;
+                string mobileFilter = filters.First() as string;
                 if (mobileFilter != null)
                 {
-                    args.addNonNullOrEmptyParameter("filters", mobileFilter);
+                    args.AddString("filters", mobileFilter);
                 }
             }
-            args.addNonNullOrEmptyParameter("max_recipients", maxRecipients);
-            args.addNonNullOrEmptyParameter("data", data);
-            args.addNonNullOrEmptyParameter("title", title);
+
+            args.AddNullablePrimitive("max_recipients", maxRecipients);
+            args.AddString("data", data);
+            args.AddString("title", title);
             var appRequestCall = new JavaMethodCall<IAppRequestResult>(this, "AppRequest");
             appRequestCall.Callback = callback;
-            appRequestCall.call(args);
+            appRequestCall.Call(args);
         }
 
         public override void AppInvite(
@@ -161,40 +186,29 @@ namespace Facebook.Unity.Mobile.Android
             Uri previewImageUrl,
             FacebookDelegate<IAppInviteResult> callback)
         {
-            var paramsDict = new Dictionary<string, object>();
-            if (callback != null)
-            {
-                paramsDict["callback_id"] = CallbackManager.AddFacebookDelegate(callback);
-            }
-
-            if (appLinkUrl != null && !string.IsNullOrEmpty(appLinkUrl.AbsoluteUri))
-            {
-                paramsDict["appLinkUrl"] = appLinkUrl.AbsoluteUri;
-            }
-
-            if (previewImageUrl != null && !string.IsNullOrEmpty(previewImageUrl.AbsoluteUri))
-            {
-                paramsDict["previewImageUrl"] = previewImageUrl.AbsoluteUri;
-            }
-
-            CallFB("AppInvite", MiniJSON.Json.Serialize(paramsDict));
+            MethodArguments args = new MethodArguments();
+            args.AddUri("appLinkUrl", appLinkUrl);
+            args.AddUri("previewImageUrl", previewImageUrl);
+            var appInviteCall = new JavaMethodCall<IAppInviteResult>(this, "AppInvite");
+            appInviteCall.Callback = callback;
+            appInviteCall.Call(args);
         }
 
         public override void ShareLink(
-            string contentURL,
+            Uri contentURL,
             string contentTitle,
             string contentDescription,
-            string photoURL, 
+            Uri photoURL,
             FacebookDelegate<IShareResult> callback)
         {
             MethodArguments args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("content_url", contentURL);
-            args.addNonNullOrEmptyParameter("content_title", contentTitle);
-            args.addNonNullOrEmptyParameter("content_description", contentDescription);
-            args.addNonNullOrEmptyParameter("photo_url", photoURL);
+            args.AddUri("content_url", contentURL);
+            args.AddString("content_title", contentTitle);
+            args.AddString("content_description", contentDescription);
+            args.AddUri("photo_url", photoURL);
             var shareLinkCall = new JavaMethodCall<IShareResult>(this, "ShareLink");
             shareLinkCall.Callback = callback;
-            shareLinkCall.call(args);
+            shareLinkCall.Call(args);
         }
 
         public override void FeedShare(
@@ -208,16 +222,16 @@ namespace Facebook.Unity.Mobile.Android
             FacebookDelegate<IShareResult> callback)
         {
             MethodArguments args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("toId", toId);
-            args.addNonNullOrEmptyParameter("link", link);
-            args.addNonNullOrEmptyParameter("linkName", linkName);
-            args.addNonNullOrEmptyParameter("linkCaption", linkCaption);
-            args.addNonNullOrEmptyParameter("linkDescription", linkDescription);
-            args.addNonNullOrEmptyParameter("picture", picture);
-            args.addNonNullOrEmptyParameter("mediaSource", mediaSource);
+            args.AddString("toId", toId);
+            args.AddUri("link", link);
+            args.AddString("linkName", linkName);
+            args.AddString("linkCaption", linkCaption);
+            args.AddString("linkDescription", linkDescription);
+            args.AddUri("picture", picture);
+            args.AddString("mediaSource", mediaSource);
             var call = new JavaMethodCall<IShareResult>(this, "FeedShare");
             call.Callback = callback;
-            call.call(args);
+            call.Call(args);
         }
 
         public override void GameGroupCreate(
@@ -227,38 +241,31 @@ namespace Facebook.Unity.Mobile.Android
             FacebookDelegate<IGroupCreateResult> callback)
         {
             MethodArguments args = new MethodArguments();
-            args.addNonNullOrEmptyParameter("name", name);
-            args.addNonNullOrEmptyParameter("description", description);
-            args.addNonNullOrEmptyParameter("privacy", privacy);
+            args.AddString("name", name);
+            args.AddString("description", description);
+            args.AddString("privacy", privacy);
             var gameGroupCreate = new JavaMethodCall<IGroupCreateResult>(this, "GameGroupCreate");
             gameGroupCreate.Callback = callback;
-            gameGroupCreate.call(args);
+            gameGroupCreate.Call(args);
         }
 
         public override void GameGroupJoin(
             string id,
             FacebookDelegate<IGroupJoinResult> callback)
         {
-            var paramsDict = new Dictionary<string, object>();
-            paramsDict["id"] = id;
-
-            if (callback != null)
-            {
-                paramsDict["callback_id"] = CallbackManager.AddFacebookDelegate(callback);
-            }
-
-            CallFB("GameGroupJoin", MiniJSON.Json.Serialize (paramsDict));
+            MethodArguments args = new MethodArguments();
+            args.AddString("id", id);
+            var groupJoinCall = new JavaMethodCall<IGroupJoinResult>(this, "GameGroupJoin");
+            groupJoinCall.Callback = callback;
+            groupJoinCall.Call(args);
         }
 
-        public override void GetDeepLink(
-            FacebookDelegate<IGetDeepLinkResult> callback)
+        public override void GetAppLink(
+            FacebookDelegate<IAppLinkResult> callback)
         {
-            if (callback != null)
-            {
-                var paramsDict = new Dictionary<string, object>();
-                paramsDict["callback_id"] = CallbackManager.AddFacebookDelegate(callback);
-                CallFB("GetDeepLink", MiniJSON.Json.Serialize (paramsDict));
-            }
+            var getAppLink = new JavaMethodCall<IAppLinkResult>(this, "GetAppLink");
+            getAppLink.Callback = callback;
+            getAppLink.Call();
         }
 
         public override void AppEventsLogEvent(
@@ -266,17 +273,12 @@ namespace Facebook.Unity.Mobile.Android
             float? valueToSum,
             Dictionary<string, object> parameters)
         {
-            var paramsDict = new Dictionary<string, object>();
-            paramsDict["logEvent"] = logEvent;
-            if (valueToSum.HasValue)
-            {
-                paramsDict["valueToSum"] = valueToSum.Value;
-            }
-            if (parameters != null)
-            {
-                paramsDict["parameters"] = ToStringDict(parameters);
-            }
-            CallFB("AppEvents", MiniJSON.Json.Serialize(paramsDict));
+            MethodArguments args = new MethodArguments();
+            args.AddString("logEvent", logEvent);
+            args.AddNullablePrimitive("valueToSum", valueToSum);
+            args.AddDictionary("parameters", parameters);
+            var appEventcall = new JavaMethodCall<IResult>(this, "AppEvents");
+            appEventcall.Call(args);
         }
 
         public override void AppEventsLogPurchase(
@@ -284,29 +286,39 @@ namespace Facebook.Unity.Mobile.Android
             string currency,
             Dictionary<string, object> parameters)
         {
-            var paramsDict = new Dictionary<string, object>();
-            paramsDict["logPurchase"] = logPurchase;
-            paramsDict["currency"] = (!string.IsNullOrEmpty(currency)) ? currency : "USD";
-            if (parameters != null)
-            {
-                paramsDict["parameters"] = ToStringDict(parameters);
-            }
-            CallFB("AppEvents", MiniJSON.Json.Serialize(paramsDict));
+            MethodArguments args = new MethodArguments();
+            args.AddPrimative("logPurchase", logPurchase);
+            args.AddString("currency", currency);
+            args.AddDictionary("parameters", parameters);
+            var logPurchaseCall = new JavaMethodCall<IResult>(this, "AppEvents");
+            logPurchaseCall.Call(args);
         }
 
         public override void ActivateApp(string appId)
         {
-            var parameters = new Dictionary<string, string>(1);
-            if (!string.IsNullOrEmpty(appId))
-            {
-                parameters["app_id"] = appId;
-            }
-            CallFB("ActivateApp", MiniJSON.Json.Serialize(parameters));
+            MethodArguments args = new MethodArguments();
+            args.AddString("app_id", appId);
+            var activateApp = new JavaMethodCall<IResult>(this, "ActivateApp");
+            activateApp.Call(args);
         }
 
-        protected override void setShareDialogMode(ShareDialogMode mode)
+        public override void FetchDeferredAppLink(
+            FacebookDelegate<IAppLinkResult> callback)
         {
-            CallFB("SetShareDialogMode", mode.ToString());
+            MethodArguments args = new MethodArguments();
+            var fetchDeferredAppLinkData = new JavaMethodCall<IAppLinkResult>(this, "FetchDeferredAppLinkData");
+            fetchDeferredAppLinkData.Callback = callback;
+            fetchDeferredAppLinkData.Call(args);
+        }
+
+        protected override void SetShareDialogMode(ShareDialogMode mode)
+        {
+            this.CallFB("SetShareDialogMode", mode.ToString());
+        }
+
+        private void CallFB(string method, string args)
+        {
+            this.facebookJava.CallStatic(method, args);
         }
 
         private class JavaMethodCall<T> : MethodCall<T> where T : IResult
@@ -319,22 +331,25 @@ namespace Facebook.Unity.Mobile.Android
                 this.androidImpl = androidImpl;
             }
 
-            public override void call(MethodArguments args = null)
+            public override void Call(MethodArguments args = null)
             {
                 MethodArguments paramsCopy;
                 if (args == null)
                 {
                     paramsCopy = new MethodArguments();
-                } else {
+                }
+                else
+                {
                     paramsCopy = new MethodArguments(args);
                 }
 
-                if (this.Callback != null) {
-                    paramsCopy.addNonNullParameter("callback_id", androidImpl.CallbackManager.AddFacebookDelegate(this.Callback));
+                if (this.Callback != null)
+                {
+                    paramsCopy.AddString("callback_id", this.androidImpl.CallbackManager.AddFacebookDelegate(this.Callback));
                 }
-                androidImpl.CallFB(this.MethodName, paramsCopy.ToJsonString());
+
+                this.androidImpl.CallFB(this.MethodName, paramsCopy.ToJsonString());
             }
         }
     }
 }
-

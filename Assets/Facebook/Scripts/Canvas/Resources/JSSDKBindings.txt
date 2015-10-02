@@ -38,13 +38,13 @@ window.FBUnity = {
         }
     },
     
-    login: function(scope) {
-        FB.login(FBUnity.loginCallback, scope ? {scope: scope, auth_type: 'rerequest', return_scopes: true} : {return_scopes: true});
+    login: function(scope, callback_id) {
+        FB.login(FBUnity.loginCallback.bind(null, callback_id), scope ? {scope: scope, auth_type: 'rerequest', return_scopes: true} : {return_scopes: true});
     },
     
-    loginCallback: function(response) {
-        console.log(response);
-        FBUnity.sendMessage('OnFacebookAuthResponse', response ? JSON.stringify(response) : '');
+    loginCallback: function(callback_id, response) {
+        response = {'callback_id': callback_id, 'response': response};
+        FBUnity.sendMessage('OnLoginComplete', JSON.stringify(response));
     },
     
     onInitWithStatus: function() {

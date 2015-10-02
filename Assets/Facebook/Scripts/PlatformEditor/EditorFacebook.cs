@@ -1,15 +1,47 @@
-using System;
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+/**
+ * Copyright (c) 2014-present, Facebook, Inc. All rights reserved.
+ *
+ * You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
+ * copy, modify, and distribute this software in source code or binary form for use
+ * in connection with the web services and APIs provided by Facebook.
+ *
+ * As with any software that integrates with the Facebook platform, your use of
+ * this software is subject to the Facebook Developer Principles and Policies
+ * [http://developers.facebook.com/policy/]. This copyright notice shall be
+ * included in all copies or substantial portions of the software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 namespace Facebook.Unity.Editor
 {
-    internal class EditorFacebook : FacebookBase
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using Facebook.Unity.Canvas;
+    using Facebook.Unity.Editor.Dialogs;
+    using Facebook.Unity.Mobile;
+    using UnityEngine;
+
+    internal class EditorFacebook : FacebookBase, IMobileFacebookImplementation, ICanvasFacebookImplementation
     {
-        private FacebookDelegate<LoginResult> loginCallback;
+        private const string WarningMessage = "You are using the facebook SDK in the Unity Editor. " +
+            "Behavior may not be the same as when used on iOS, Android, or Web.";
+
+        private const string AccessTokenKey = "com.facebook.unity.editor.accesstoken";
+
+        public EditorFacebook() : base(new CallbackManager())
+        {
+        }
 
         public override bool LimitEventUsage { get; set; }
+
+        public ShareDialogMode ShareDialogMode { get; set; }
 
         public override string FacebookSdkVersion
         {
@@ -19,12 +51,15 @@ namespace Facebook.Unity.Editor
             }
         }
 
-        public EditorFacebook() : base(new CallbackManager())
+        private IFacebookCallbackHandler EditorGameObject
         {
+            get
+            {
+                return ComponentFactory.GetComponent<EditorFacebookGameObject>();
+            }
         }
 
         public override void Init(
-            InitDelegate onInitComplete,
             string appId,
             bool cookie,
             bool logging,
@@ -33,56 +68,69 @@ namespace Facebook.Unity.Editor
             string channelUrl,
             string authResponse,
             bool frictionlessRequests,
-            HideUnityDelegate hideUnityDelegate)
+            HideUnityDelegate hideUnityDelegate,
+            InitDelegate onInitComplete)
         {
-            if (onInitComplete != null)
-            {
-                onInitComplete();
-            }
+            // Warn that editor behavior will not match supported platforms
+            FacebookLogger.Warn(WarningMessage);
 
-            var editorFB = ComponentFactory.GetComponent<EditorFacebookGameObject>();
-            editorFB.OnInitComplete("");
+            base.Init(
+                appId,
+                cookie,
+                logging,
+                status,
+                xfbml,
+                channelUrl,
+                authResponse,
+                frictionlessRequests,
+                hideUnityDelegate,
+                onInitComplete);
+
+            this.EditorGameObject.OnInitComplete(string.Empty);
         }
 
         public override void LogInWithReadPermissions(
-            string scope,
+            IEnumerable<string> permissions,
             FacebookDelegate<ILoginResult> callback)
         {
-            AddAuthDelegate(callback);
-            ComponentFactory.GetComponent<EditorFacebookAccessToken>();
+            // For the editor don't worry about the difference between
+            // LogInWithReadPermissions and LogInWithPublishPermissions
+            this.LogInWithPublishPermissions(permissions, callback);
         }
 
         public override void LogInWithPublishPermissions(
-            string scope,
+            IEnumerable<string> permissions,
             FacebookDelegate<ILoginResult> callback)
         {
-            AddAuthDelegate(callback);
-            ComponentFactory.GetComponent<EditorFacebookAccessToken>();
+            var dialog = ComponentFactory.GetComponent<MockLoginDialog>();
+            dialog.Callback = this.EditorGameObject.OnLoginComplete;
+            dialog.CallbackID = this.CallbackManager.AddFacebookDelegate(callback);
+            dialog.Permissions = permissions != null ? permissions : new List<string>();
         }
 
         public override void AppRequest(
             string message,
-            OGActionType actionType,
+            OGActionType? actionType,
             string objectId,
-            string[] to ,
-            List<object> filters,
-            string[] excludeIds,
-            int? maxRecipients ,
+            IEnumerable<string> to,
+            IEnumerable<object> filters,
+            IEnumerable<string> excludeIds,
+            int? maxRecipients,
             string data,
             string title,
             FacebookDelegate<IAppRequestResult> callback)
         {
-            FacebookLogger.Info("App Request dialog is not implemented in the Unity editor.");
+            this.ShowEmptyMockDialog(this.OnAppRequestsComplete, callback, "Mock App Request");
         }
 
         public override void ShareLink(
-            string contentURL,
+            Uri contentURL,
             string contentTitle,
             string contentDescription,
-            string photoURL, 
+            Uri photoURL,
             FacebookDelegate<IShareResult> callback)
         {
-            FacebookLogger.Info("Share Link is not implemented in the Unity editor.");
+            this.ShowEmptyMockDialog(this.OnShareLinkComplete, callback, "Mock Share Link");
         }
 
         public override void FeedShare(
@@ -95,7 +143,7 @@ namespace Facebook.Unity.Editor
             string mediaSource,
             FacebookDelegate<IShareResult> callback)
         {
-            Facebook.Unity.FacebookLogger.Info("Feed Share is not implemented in the Unity editor.");
+            this.ShowEmptyMockDialog(this.OnShareLinkComplete, callback, "Mock Feed Share");
         }
 
         public override void GameGroupCreate(
@@ -104,14 +152,14 @@ namespace Facebook.Unity.Editor
             string privacy,
             FacebookDelegate<IGroupCreateResult> callback)
         {
-            throw new PlatformNotSupportedException("There is no Facebook GameGroupCreate Dialog on Editor");
+            this.ShowEmptyMockDialog(this.OnGroupCreateComplete, callback, "Mock Group Create");
         }
 
         public override void GameGroupJoin(
             string id,
             FacebookDelegate<IGroupJoinResult> callback)
         {
-            throw new PlatformNotSupportedException("There is no Facebook GameGroupJoin Dialog on Editor");
+            this.ShowEmptyMockDialog(this.OnGroupJoinComplete, callback, "Mock Group Join");
         }
 
         public override void ActivateApp(string appId)
@@ -119,9 +167,12 @@ namespace Facebook.Unity.Editor
             FacebookLogger.Info("This only needs to be called for iOS or Android.");
         }
 
-        public override void GetDeepLink(FacebookDelegate<IGetDeepLinkResult> callback)
+        public override void GetAppLink(FacebookDelegate<IAppLinkResult> callback)
         {
-            FacebookLogger.Info("No Deep Linking in the Editor");
+            var result = new Dictionary<string, object>();
+            result[Constants.UrlKey] = "mockurl://testing.url";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+            this.OnGetAppLinkComplete(MiniJSON.Json.Serialize(result));
         }
 
         public override void AppEventsLogEvent(
@@ -129,7 +180,7 @@ namespace Facebook.Unity.Editor
             float? valueToSum,
             Dictionary<string, object> parameters)
         {
-            Debug.Log("Pew! Pretending to send this off.  Doesn't actually work in the editor");
+            FacebookLogger.Log("Pew! Pretending to send this off.  Doesn't actually work in the editor");
         }
 
         public override void AppEventsLogPurchase(
@@ -137,42 +188,126 @@ namespace Facebook.Unity.Editor
             string currency,
             Dictionary<string, object> parameters)
         {
-            Debug.Log("Pew! Pretending to send this off.  Doesn't actually work in the editor");
+            FacebookLogger.Log("Pew! Pretending to send this off.  Doesn't actually work in the editor");
+        }
+
+        public void AppInvite(
+            Uri appLinkUrl,
+            Uri previewImageUrl,
+            FacebookDelegate<IAppInviteResult> callback)
+        {
+            this.ShowEmptyMockDialog(this.OnAppInviteComplete, callback, "Mock App Invite");
+        }
+
+        public void FetchDeferredAppLink(
+            FacebookDelegate<IAppLinkResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result[Constants.UrlKey] = "mockurl://testing.url";
+            result[Constants.RefKey] = "mock ref";
+            result[Constants.ExtrasKey] = new Dictionary<string, object>()
+            {
+                {
+                    "mock extra key", "mock extra value"
+                }
+            };
+
+            result[Constants.TargetUrlKey] = "mocktargeturl://mocktarget.url";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+            this.OnFetchDeferredAppLinkComplete(MiniJSON.Json.Serialize(result));
+        }
+
+        public void Pay(
+            string product,
+            string action,
+            int quantity,
+            int? quantityMin,
+            int? quantityMax,
+            string requestId,
+            string pricepointId,
+            string testCurrency,
+            FacebookDelegate<IPayResult> callback)
+        {
+            this.ShowEmptyMockDialog(this.OnPayComplete, callback, "Mock Pay Dialog");
         }
 
         public override void OnAppRequestsComplete(string message)
         {
-            throw new NotImplementedException();
+            var result = new AppRequestResult(message);
+            CallbackManager.OnFacebookResponse(result);
         }
 
-        public override void OnGetDeepLinkComplete(string message)
+        public override void OnGetAppLinkComplete(string message)
         {
-            throw new NotImplementedException();
+            var result = new AppLinkResult(message);
+            CallbackManager.OnFacebookResponse(result);
         }
 
         public override void OnGroupCreateComplete(string message)
         {
-            throw new NotImplementedException();
+            var result = new GroupCreateResult(message);
+            CallbackManager.OnFacebookResponse(result);
         }
 
         public override void OnGroupJoinComplete(string message)
         {
-            throw new NotImplementedException();
-        }
-
-        public override void OnInitComplete(string message)
-        {
-            // Do Nothing
+            var result = new GroupJoinResult(message);
+            CallbackManager.OnFacebookResponse(result);
         }
 
         public override void OnLoginComplete(string message)
         {
-            throw new NotImplementedException();
+            var result = new LoginResult(message);
+            this.OnAuthResponse(result);
         }
 
         public override void OnShareLinkComplete(string message)
         {
-            throw new NotImplementedException();
+            var result = new ShareResult(message);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnAppInviteComplete(string message)
+        {
+            var result = new AppInviteResult(message);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnFetchDeferredAppLinkComplete(string message)
+        {
+            var result = new AppLinkResult(message);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnPayComplete(string message)
+        {
+            var result = new PayResult(message);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        #region Canvas Dummy Methods
+
+        public void OnFacebookAuthResponseChange(string message)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void OnUrlResponse(string message)
+        {
+            throw new NotSupportedException();
+        }
+
+        #endregion
+
+        private void ShowEmptyMockDialog<T>(
+            EditorFacebookMockDialog.OnComplete callback,
+            FacebookDelegate<T> userCallback,
+            string title) where T : IResult
+        {
+            var dialog = ComponentFactory.GetComponent<EmptyMockDialog>();
+            dialog.Callback = callback;
+            dialog.CallbackID = this.CallbackManager.AddFacebookDelegate(userCallback);
+            dialog.EmptyDialogTitle = title;
         }
     }
 }

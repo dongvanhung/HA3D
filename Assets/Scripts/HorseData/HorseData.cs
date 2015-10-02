@@ -18,12 +18,19 @@ public class HorseData : HorseDataWithStats {
 	void Update () {
 	
 	}
-
+	public SFSObject asSFSObject(int aRound) {
+		SFSObject s = new SFSObject ();
+		s.PutInt ("id",this.horseID);
+		s.PutUtfString ("c", this.compressedString(aRound));
+		s.PutLong ("o", this.ownerID);
+		s.PutInt ("u", SmartfoxConnectionHandler.REF.smartfoxuid);
+		return s;
+	}
 	public void loadFromSFSObject(SFSObject aSFSObject) {
 		if(aSFSObject.GetSFSObject("horses")!=null)
 		{ 
 			aSFSObject = aSFSObject.GetSFSObject("horses") as SFSObject;
-		}
+		} 
 		this.accelerationBase = aSFSObject.GetLong("Acceleration");
 		this.baseLayer = aSFSObject.GetInt("BaseLayer");
 		this.blanket = aSFSObject.GetInt("Blanket");

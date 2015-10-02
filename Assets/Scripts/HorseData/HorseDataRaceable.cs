@@ -174,9 +174,9 @@ public class HorseDataRaceable : HorseDataWithPersonality {
 		s += "|"+this.horseID+"|"+staminaForRace+"|";
 		s += takeStaminaPerFrame+"|"+behindBoost+"|"+aheadBoost+"|";
 		s+= raceJumpingSpeed+"|"+this.baseLayer+"|"+this.overlay+"|"+this.mane+"|"+this.tail+"|"+this.saddle+"|";
-		s+= this.reintype+"|"+Compressor.Compress(this._baseName)+"|"+this.level+"|"+PlayerMain.LOCAL.selectedJockey.id+"|"+this.originalOwnerID;
+		s+= this.reintype+"|"+Compressor.Compress(this._baseName)+"|"+this.level+"|"+PlayerMain.LOCAL.selectedJockey.id+"|"+this.originalOwnerID+"|"+this.ownerID;
 
-		Debug.Log ("Uncompressed string is: "+s);	
+		Debug.Log ("Uncompressed string is: "+s);	 
 		return Compressor.Compress(s);
 	}
 }

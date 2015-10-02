@@ -9,13 +9,17 @@ public class PreRaceInterface : MonoBehaviour {
 	public List<UILabel> labels = new List<UILabel>();
 	public bool hasAccepted = false;
 	public TweenAlpha tween;
+	public bool disappearing = false;
 	// Use this for initialization
 	void Start () {
-		if(SmartfoxConnectionHandler.REF!=null)
+		if (SmartfoxConnectionHandler.REF != null) {
 			SmartfoxConnectionHandler.REF.onRaceStatusChange += onRaceStatusChange;
+			SmartfoxConnectionHandler.REF.sendRaceMessage ("dh", PlayerMain.LOCAL.selectedRaceHorse.asSFSObject(RaceTrack.REF.round));
+		}
 	}
 	private void onRaceStatusChange(int aStatus) {
-		if(aStatus==1) {
+		if(aStatus==1&&!disappearing) { 
+			disappearing = true;
 			this.tween.enabled = true;
 			StartCoroutine(delayedDestroy());
 		}

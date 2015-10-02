@@ -29,4 +29,5 @@ extern const char* const FB_OBJECT_NAME;
 + (void)sendErrorToUnity:(NSString *)unityMessage errorMessage:(NSString *)errorMessage requestId:(int)requestId;
 + (void)sendMessageToUnity:(NSString *)unityMessage userData:(NSDictionary *)userData requestId:(int)requestId;
 + (NSString *)stringFromCString:(const char *)string;
++ (NSDictionary *)appLinkDataFromUrl:(NSURL *)url;
 @end

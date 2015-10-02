@@ -21,7 +21,7 @@
 #import "FBUnityUtility.h"
 
 NSString *const FBUnityMessageName_OnAppRequestsComplete = @"OnAppRequestsComplete";
-NSString *const FBUnityMessageName_OnGetDeepLinkComplete = @"OnGetDeepLinkComplete";
+NSString *const FBUnityMessageName_OnGetAppLinkComplete = @"OnGetAppLinkComplete";
 NSString *const FBUnityMessageName_OnGroupCreateComplete = @"OnGroupCreateComplete";
 NSString *const FBUnityMessageName_OnGroupJoinComplete = @"OnGroupJoinComplete";
 NSString *const FBUnityMessageName_OnInitComplete = @"OnInitComplete";
@@ -29,6 +29,7 @@ NSString *const FBUnityMessageName_OnLoginComplete = @"OnLoginComplete";
 NSString *const FBUnityMessageName_OnLogoutComplete = @"OnLogoutComplete";
 NSString *const FBUnityMessageName_OnShareLinkComplete = @"OnShareLinkComplete";
 NSString *const FBUnityMessageName_OnAppInviteComplete = @"OnAppInviteComplete";
+NSString *const FBUnityMessageName_OnFetchDeferredAppLinkComplete = @"OnFetchDeferredAppLinkComplete";
 
 static NSMutableArray *g_instances;
 
