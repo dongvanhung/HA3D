@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Sfs2X.Entities.Data;
 
 public class RaceTrack : MonoBehaviour {
 
@@ -17,6 +18,10 @@ public class RaceTrack : MonoBehaviour {
 
 	public bool raceStarted = false;
 	public bool iAmHost = false;
+
+	public const float MIN_TIME_BETWEEN_BROADCAST = 0.25f;
+
+	public float lastBroadcastTime;
 	// Use this for initialization
 	void Start () {
 		if(PlayerMain.LOCAL==null) {
@@ -39,12 +44,68 @@ public class RaceTrack : MonoBehaviour {
 			SmartfoxConnectionHandler.REF.onRaceStatusChange += onRaceStatusChange;
 
 	}
+
+	public void handlePacketFromHost(SFSObject aObject) {
+		long id = aObject.GetLong("i");
+		for(int i = 0;i<this.sortedHorses.Count;i++) {
+			if(sortedHorses[i].horseID==id) {
+				sortedHorses[i].dataPackage = aObject;
+			}
+		}
+	}
 	public void startRace() {
 		for(int i = 0;i<this.sortedHorses.Count;i++) {
 			sortedHorses[i].hasStarted = true;
 		}
+		lastBroadcastTime = Time.time;
+		this.raceStarted = true;
 	}
 
+	public void broadcastPositions() {
+		if(Time.time-lastBroadcastTime>MIN_TIME_BETWEEN_BROADCAST) {
+			
+			SFSObject o = new SFSObject();
+			SFSArray h = new SFSArray();
+			for(int i = 0;i<this.sortedHorses.Count;i++) {
+				if(sortedHorses[i].currentPoint==null) 
+					return;
+				h.AddSFSObject(sortedHorses[i].dataPackage);
+			}
+			o.PutSFSArray("a",h);
+			o.PutInt("f",this.framesPassed);
+			SmartfoxConnectionHandler.REF.sendRaceMessage("b",o);
+			lastBroadcastTime = Time.time;
+		}
+	}
+	private void initPacketFromHost(SFSObject aObject) {
+		long id = aObject.GetLong("i");
+		for(int i = 0;i<this.sortedHorses.Count;i++) {
+			if(sortedHorses[i].horseID==id) {
+				sortedHorses[i].initFromPackage(aObject);
+			}
+		}
+	}
+	public void handleRacePositionsBroadcast(SFSObject aObject) {
+		if(aObject.ContainsKey("a")) {
+			SFSArray a = (SFSArray) aObject.GetSFSArray("a");
+			int f = aObject.GetInt("f");
+			for(int i = 0;i<a.Size();i++) {
+				initPacketFromHost((SFSObject) a.GetSFSObject(i));
+			}
+		//Time.timeScale = 0.01f;
+
+			for(int i = f;i<framesPassed;i++) {
+				for(int j = 0;j<this.sortedHorses.Count;j++) {
+					sortedHorses[j].FixedUpdate();
+				}
+			}
+			for(int i = 0;i<sortedHorses.Count;i++) {
+				Vector3 posDiff = sortedHorses[i].transform.position-sortedHorses[i].originalPosition;
+				Debug.Log ("Position was wrong by: "+posDiff+" last applied speed was: "+sortedHorses[i].lastAppliedSpeed);
+			}
+		}
+		
+	}
 	private void onRaceStatusChange(int aStatus) {
 		if(this.iAmHost&&aStatus==1) {
 			createAndDeclareDebugHorses();
@@ -54,6 +115,16 @@ public class RaceTrack : MonoBehaviour {
 		if(this.iAmHost) {
 		
 		}
+	}
+
+	public RaceLinePoint findRaceLinePoint(int aPointID) {
+		for(int i =0;i<this.racingLines.Count;i++) {
+			RaceLinePoint rp = racingLines[i].containsPoint(aPointID);
+			if(rp!=null) {
+				return rp;
+			}
+		}
+		return null;
 	}
 	private void onRaceHostChanged(bool aIAmHost) {
 		this.iAmHost = aIAmHost;

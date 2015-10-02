@@ -233,6 +233,11 @@ public class SmartfoxConnectionHandler : MonoBehaviour {
 		if(sfs.IsConnected) {
 			sfs.Send(new ExtensionRequest(aCommand,aObject));
 		}
+	}	
+	public void sendRaceMessage(string aCommand,SFSObject aObject) {
+		if(sfs.IsConnected) {
+			sfs.Send(new ExtensionRequest(aCommand,aObject,this.raceRoom));
+		}
 	}
 	public void sendHorsesArray(string aCommand,SFSArray aHorses)
 	{
@@ -298,7 +303,6 @@ public class SmartfoxConnectionHandler : MonoBehaviour {
 	}
 	private void OnExtensionResponse(BaseEvent evt) {
 		string cmd = (string)evt.Params["cmd"];
-		Debug.Log ("Extension response received: "+cmd);
 		SFSObject dataObject = (SFSObject)evt.Params["params"];
 		
 		switch ( cmd ) {
@@ -326,6 +330,15 @@ public class SmartfoxConnectionHandler : MonoBehaviour {
 					RaceTrack.REF.startRace();
 				}
 			break;
+		case "b":
+			if(dataObject.ContainsKey("f")) {
+				if(RaceTrack.REF!=null) {
+					// Bounced race packet data.
+					RaceTrack.REF.handleRacePositionsBroadcast(dataObject);
+				}
+			}
+			break;
+
 		} 
 		
 	}

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class RacingLine : MonoBehaviour {
 
-
+	public RaceLinePoint[] points;
 	public Color raceLineColor = Color.blue;
 	// Use this for initialization
 	void Start () {
@@ -24,55 +24,62 @@ public class RacingLine : MonoBehaviour {
 		}
 		setupDistanceToFinish();
 	}
+	public RaceLinePoint containsPoint(int aPointID) {
+		for(int i = 0;i<points.Length;i++) {
+			if(points[i].uid==aPointID) {
+				return points[i];
+			}
+		}
+		return null;
+	}
 	public void initLine(int aLineIndex) {
+
 		RaceLinePoint[] p = this.GetComponentsInChildren<RaceLinePoint>();
+		points = p;
 		for(int i = 0;i<p.Length;i++) {
+
 			p[i].gameObject.name = "R"+aLineIndex+"P"+i;
+			p[i].uid = aLineIndex*10000+i;
 		}
 	}
 	void setupDistanceToFinish() {
 		
-		RaceLinePoint[] p = this.GetComponentsInChildren<RaceLinePoint>();
-		for(int i = 0;i<p.Length;i++) {
-			p[i].distanceToFinish = 0f;
-			p[i].thisIndex = i;
+		for(int i = 0;i<points.Length;i++) {
+			points[i].distanceToFinish = 0f;
+			points[i].thisIndex = i;
 		}
 		float cummulativeDist = 0f; 
-		for(int i = p.Length-3;i>=0;i--) {
-			float dist = Vector3.Distance(p[i].transform.position,p[i+1].transform.position);
+		for(int i = points.Length-3;i>=0;i--) {
+			float dist = Vector3.Distance(points[i].transform.position,points[i+1].transform.position);
 			cummulativeDist += dist;
-			p[i].distanceToFinish = cummulativeDist;
-			p[i].thisIndex = i;
-		}
+			points[i].distanceToFinish = cummulativeDist;
+			points[i].thisIndex = i;
+		} 
 	}
 
 	public RaceLinePoint pointAtIndex(int aIndex) {
-		RaceLinePoint[] p = this.GetComponentsInChildren<RaceLinePoint>();
-		if(aIndex>=0&&aIndex<p.Length) 
-			return p[aIndex]; else return p[p.Length-1];
+		if(aIndex>=0&&aIndex<points.Length) 
+			return points[aIndex]; else return points[points.Length-1];
 	}
 	public RaceLinePoint getNextPoint(RaceLinePoint aCurrent) {
-		RaceLinePoint[] p = this.GetComponentsInChildren<RaceLinePoint>();
-		for(int i = 0;i<p.Length-1;i++) {
-			if(p[i]==aCurrent) {
-				return p[i+1];
+		for(int i = 0;i<points.Length-1;i++) {
+			if(points[i]==aCurrent) {
+				return points[i+1];
 			}
 		}
-		return p[p.Length-1];
+		return points[points.Length-1];
 	}
 	public RaceLinePoint getClosestNodeToHorse(Vector3 aHorsePos) {
-		RaceLinePoint[] p = this.GetComponentsInChildren<RaceLinePoint>();
-
 		float lastDistFromHorse = float.MaxValue;
-		for(int i = 0;i<p.Length;i++) {
-			float thisDist = Vector3.Distance(aHorsePos,p[i].transform.position);
+		for(int i = 0;i<points.Length;i++) {
+			float thisDist = Vector3.Distance(aHorsePos,points[i].transform.position);
 			if(thisDist>lastDistFromHorse) {
-				return p[i-1];
+				return points[i-1];
 			} else {
 				lastDistFromHorse = thisDist;
 			}
 		}
-		return p[p.Length-1];
+		return points[points.Length-1];
 	}
 	public float getDistanceFromHorse(Vector3 aHorsePos) {
 		RaceLinePoint[] p = this.GetComponentsInChildren<RaceLinePoint>();

@@ -14,7 +14,7 @@ public class PositionHolderPanel : MonoBehaviour {
 	void Update () {
 		if(RaceTrack.REF!=null&&RaceTrack.REF.sortedHorses.Count>0) {
 			List<HorseController> horses = RaceTrack.REF.sortedHorses;
-			for(int i = 0;i<labels.Count;i++) {
+			for(int i = 0;i<labels.Count&&i<horses.Count;i++) {
 				labels[i].text = horses[i].name;
 			}
 		}

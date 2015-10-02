@@ -56,9 +56,11 @@ public class HorseController : MonoBehaviour {
 	public double staminaPerFrame;
 	public double stamina;
 
-	public RaceLinePoint currentPoint;
+	private RaceLinePoint _currentPoint;
 	public RaceLinePoint prevPoint;
 
+	public Vector3 lastAppliedSpeed;
+	public Vector3 originalPosition;
 	public float closenessToNextPoint;
 	public float speed = 4f;
 	public float desiredSpeed = 6f;
@@ -88,7 +90,14 @@ public class HorseController : MonoBehaviour {
 		horseNose = this.transform.FindChild("HorseNose");
 	}
 
-
+	public RaceLinePoint currentPoint {
+		set {
+			_currentPoint = value;
+		}
+		get {
+			return _currentPoint;
+		}
+	}
 	public void OnTriggerEnter(Collider aCollision) {
 		if(!hasFinished&&aCollision.GetComponent<Collider>().gameObject.tag=="Finish") {
 			hasFinished = true;
@@ -99,7 +108,6 @@ public class HorseController : MonoBehaviour {
 		this.dataFromServer(aHorse.ownerID,aHorse.compressedString(1));
 	}
 	public void dataFromServer(long aOwnerID,string aData) {
-		Debug.Log ("Got Data from Server!");
 		string uncompressed = Compressor.UnCompress(aData);
 		string[] split = uncompressed.Split(new char[] {'|'});
 		this.startSpeed = (float) Convert.ToDouble(split[0]);
@@ -138,7 +146,6 @@ public class HorseController : MonoBehaviour {
 		s+= this.reintype+"|"+Compressor.Compress(this._baseName)+"|"+this.level+"|"+PlayerMain.LOCAL.selectedJockey.id+"|"+this.originalOwnerID;
 
 */	
-		Debug.Log (g);
 		this.myLabel = g.GetComponent<UILabel>();
 		g.GetComponent<UIFollowTarget>().target = this.gameObject.transform.FindChild("PlayersName");
  
@@ -235,7 +242,14 @@ public class HorseController : MonoBehaviour {
 			return this.endSpeed;
 		}
 	}
-	void FixedUpdate () {
+	private void initClosestPoint() {
+		
+		prevPoint = currentPoint;
+		currentPoint = myRacingLine.getClosestNodeToHorse(this.transform.position);
+		startDistanceToFinish = currentPoint.distanceToFinish;
+		
+	}
+	public void FixedUpdate () {
 		if(!this.hasStarted) {
 			return;
 		}
@@ -243,11 +257,8 @@ public class HorseController : MonoBehaviour {
 			handleFinishedHorse();
 			return;
 		}
-		if(currentPoint==null) {
-			prevPoint = currentPoint;
-			currentPoint = myRacingLine.getClosestNodeToHorse(this.transform.position);
-			startDistanceToFinish = currentPoint.distanceToFinish;
-		}
+		if(currentPoint==null)
+			initClosestPoint();
 		bool blocked = false;
 		HorseController infront = this.horseInFront;
 		Debug.DrawRay(horseNose.position,this.transform.forward,Color.yellow);
@@ -275,9 +286,10 @@ public class HorseController : MonoBehaviour {
 			}
 			this.desiredSpeed = this.whichSpeedBase;
 			if(RaceTrack.REF.iAmHost) {
-				SFSObject o = this.dataPackage;
+				RaceTrack.REF.broadcastPositions();
+				/*(SFSObject o = this.dataPackage;
 				TOTAL_DATA_SENT += o.ToBinary().Length;
-				Debug.Log("Total Data Sent: "+TOTAL_DATA_SENT);
+				SmartfoxConnectionHandler.REF.sendRaceMessage("b",o);*/
 			}
 		} else {
 			if(infront!=null) {
@@ -295,11 +307,17 @@ public class HorseController : MonoBehaviour {
 		if(!blocked) {
 			if(speed<desiredSpeed) {
 				speed += acceleration;
+				if(speed>desiredSpeed) {
+					speed = desiredSpeed;
+				}
 			} else if(speed>desiredSpeed) {
 				speed -= this.deceleration;
+				if(speed<desiredSpeed) {
+					speed = desiredSpeed;
+				}
 			}
 		}
-		float step = speed * Time.deltaTime;
+		float step = speed * 0.01f;
 		Vector3 endPlace = currentPoint.transform.position;
 		
 		if(useMidway&&prevPoint!=null) {
@@ -317,7 +335,8 @@ public class HorseController : MonoBehaviour {
 		Quaternion r = transform.rotation;
 		transform.rotation = Quaternion.Slerp(r, _lookRotation, Time.deltaTime * this.rotationSpeed);
 
-		Vector3 diff = transform.forward*step;
+		Vector3 diff = transform.forward*step*4f;
+		this.lastAppliedSpeed = diff;
 		transform.position += diff;
 
 		if(this.useMidway) {
@@ -339,13 +358,34 @@ public class HorseController : MonoBehaviour {
 			return float.MaxValue;
 		}
 	}
+	
 
+	public void initFromPackage(SFSObject aObject) {
+		float[] pos = aObject.GetFloatArray("pos");
+		Vector3 currentPosition = this.transform.position;
+		Vector3 position = new Vector3(pos[0],pos[1],pos[2]);
+		originalPosition = this.transform.position;
+		float[] spds = aObject.GetFloatArray("spds");
+		byte input = aObject.GetByte("in");
+		this.speed = spds[0]; 
+		this.desiredSpeed = spds[1];
+		this.currentPoint = GameObject.Find(aObject.GetUtfString("rp")).GetComponent<RaceLinePoint>();
+		this.myRacingLine = GameObject.Find(aObject.GetUtfString("r")).GetComponent<RacingLine>();
+		this.transform.position = position;	
+
+
+	}
 	public SFSObject dataPackage {
 		get {
 			SFSObject o = new SFSObject();
 			o.PutLong("i",this.horseID);
 			o.PutFloatArray("pos",new float[3] {this.transform.position.x,this.transform.position.y,this.transform.position.z});
 			o.PutFloatArray("spds",new float[2] {this.speed,this.desiredSpeed});
+			if(currentPoint==null) {
+				initClosestPoint();
+			}
+			o.PutUtfString("rp",currentPoint.name);
+			o.PutUtfString("r",myRacingLine.name);
 			byte input = 0;
 			if(this.isWhipping) {
 				input = 1;
@@ -358,24 +398,32 @@ public class HorseController : MonoBehaviour {
 		}
 		set {
 			float[] pos = value.GetFloatArray("pos");
+			Vector3 currentPosition = this.transform.position;
 			Vector3 position = new Vector3(pos[0],pos[1],pos[2]);
 			float[] spds = value.GetFloatArray("spds");
 			byte input = value.GetByte("in");
 			int frames = value.GetInt("f");
-
+			int pointID = value.GetInt("rp");
 			this.transform.position = position;	
-			this.speed = spds[0];
+			this.speed = spds[0]; 
 			this.desiredSpeed = spds[1];
+			this.currentPoint = RaceTrack.REF.findRaceLinePoint(pointID);
+			this.useMidway  = false;
+			if(frames>RaceTrack.REF.framesPassed) {
 			
-			while(frames<RaceTrack.REF.framesPassed) {
+			}
+			// We have set the data to how things were when this package was created on the server, simulate forward to our current frame with these new inputs
+			while(frames<=RaceTrack.REF.framesPassed) {
 				this.FixedUpdate();
 				frames++;
 			}
+			Vector3 posDifference = this.transform.position-currentPosition;
+			Debug.Log ("Position was wrong by: "+posDifference+" - Last Moved Speed: "+lastAppliedSpeed);
 		}
 	}
 	private HorseController horseInTargetLaneAtVector(Vector3 aHere,Vector3 aThere,RacingLine aLine) {
 		RaycastHit hit;
-		Debug.DrawLine(aHere,aThere);
+		Debug.DrawLine(aHere,aThere); 
 		if(Physics.Linecast(aHere,aThere,out hit)) {
 			if(hit.collider.gameObject.tag=="Player") {
 				HorseController h = hit.collider.GetComponent<HorseController>();
@@ -444,6 +492,7 @@ public class HorseController : MonoBehaviour {
 						this.myRacingLine = allRacingLines[i];
 						if(currentPoint.thisIndex>0)
 							prevPoint = allRacingLines[i].pointAtIndex(currentPoint.thisIndex-1);
+
 						this.currentPoint = allRacingLines[i].pointAtIndex(currentPoint.thisIndex);
 						useMidway = true;
 						return true;
