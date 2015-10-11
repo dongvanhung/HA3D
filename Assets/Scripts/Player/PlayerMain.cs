@@ -57,7 +57,7 @@ public class PlayerMain : PlayerWithHorses {
 	}
 
 	public void onRaceRoomJoined(SFSRoom aRoom) {
-		Application.LoadLevel("RaceView");
+		Application.LoadLevel("Ranchview");
 	}
 
 }
