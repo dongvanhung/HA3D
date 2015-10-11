@@ -8787,3 +8787,39 @@ INFO: quality=0.130435, quantity=881
 TRACE: Exiting AdjustMesh
 TRACE: Entering PluginShutdown
 TRACE: Exiting PluginShutdown
+TRACE: Entering PluginStartup
+INFO: BalancerSDKProductName: Balancer SDK [64 bit] 
+(licensed to Brett Bibby, Jean Tan)
+INFO: BalancerSDKProductVersion: 2.1.2.462
+INFO: BalancerSDKExpirationDate: never
+TRACE: Exiting PluginStartup
+TRACE: Entering PluginShutdown
+TRACE: Exiting PluginShutdown
+TRACE: Entering PluginStartup
+INFO: BalancerSDKProductName: Balancer SDK [64 bit] 
+(licensed to Brett Bibby, Jean Tan)
+INFO: BalancerSDKProductVersion: 2.1.2.462
+INFO: BalancerSDKExpirationDate: never
+TRACE: Exiting PluginStartup
+TRACE: Entering AddMesh
+Info: Array length 0 is 601 and pointer is 000000001C604020.
+Info: Array length 1 is 2322 and pointer is 000000001D41D020.
+Info: Array length 2 is 601 and pointer is 000000001D422020.
+Info: Array length 3 is 601 and pointer is 000000001D461020.
+Info: Array length 4 is 0 and pointer is 0000000000000000.
+Info: Array length 5 is 0 and pointer is 0000000000000000.
+Info: Array length 6 is 1 and pointer is 00000000006A7020.
+Info: Sub-mesh 0 array length is 2322.
+INFO: Added 601 vertices.
+INFO: Added 774 faces for sub-mesh 0 to face set 0.
+INFO: Added 601 normals.
+INFO: Added 601 uv0s.
+INFO: Added 0 uv1s.
+INFO: meshSettings->joinVerticesThreshold=0.000100
+INFO: meshSettings->removeTJunctionsThreshold=0.100000
+TRACE: Exiting AddMesh
+TRACE: Entering AdjustMesh
+INFO: quality=0.155263, quantity=179
+TRACE: Exiting AdjustMesh
+TRACE: Entering PluginShutdown
+TRACE: Exiting PluginShutdown
